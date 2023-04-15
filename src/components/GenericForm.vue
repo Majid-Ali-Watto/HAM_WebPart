@@ -1,31 +1,42 @@
 <template>
   <div class="hello">
-    <div>
-      <div>
-        <div class="row" v-if="search">
-          <label for="regno" class="label">{{ labelRegCNIC }}</label>
-          <input
-            type="text"
-            id="regno"
-            :maxlength="len"
-            :minlength="len"
-            class="searchbox"
-            name="regno"
-            v-model="regnoSearch"
-            required
-          />
-          <button id="search" @click="search">Search</button>
-        </div>
-      </div>
-      <fieldset style="background-color: lightgreen">
-        <legend style="font-weight: bold; font-size: 1.5rem">
-          {{ user }} Data
-        </legend>
-        <div id="intdiv">
-          <form @submit.prevent="submit">
-            <div class="row" v-if="nameVisible">
-              <label for="name" class="label">Name</label>
-              <input
+    <!-- <div> -->
+    <!-- <div> -->
+    <div class="row" v-if="search">
+      <label for="regno" class="label">{{ labelRegCNIC }}</label>
+      <input
+        type="text"
+        id="regno"
+        :maxlength="len"
+        :minlength="len"
+        class="searchbox"
+        name="regno"
+        v-model="regnoSearch"
+        required
+        onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
+      />
+      <button id="search" @click="search">Search</button>
+    </div>
+    <!-- </div> -->
+    <fieldset style="border-color: black">
+      <legend style="font-weight: bold; font-size: 1.5rem">
+        {{ user }} Data
+      </legend>
+      <div id="intdiv">
+        <form @submit.prevent="submit" style="padding: 0%; margin: 0%">
+          <div class="row" v-if="nameVisible">
+            <label for="name" class="label">Name</label>
+            <el-input
+              type="text"
+              id="name"
+              :maxlength="255"
+              :minlength="3"
+              class="inputbox"
+              name="name"
+              v-model="name"
+              required
+            />
+            <!-- <input
                 type="text"
                 id="name"
                 maxlength="255"
@@ -34,38 +45,55 @@
                 name="name"
                 v-model="name"
                 required
-              />
-            </div>
+              /> -->
+          </div>
 
-            <div class="row" v-if="regnoVisible">
-              <label for="regno" class="label">Reg No</label>
-              <input
-                type="text"
-                id="regno"
-                maxlength="11"
-                minlength="11"
-                class="inputbox"
-                name="regno"
-                v-model="regno"
-                required
+          <div class="row" v-if="regnoVisible">
+            <label for="regno" class="label">Reg No</label>
+            <el-input
+              type="text"
+              id="regno"
+              :maxlength="11"
+              :minlength="11"
+              class="inputbox"
+              name="regno"
+              v-model="regno"
+              required
+              onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
+            />
+          </div>
+          <div class="row" v-if="cnicVisible">
+            <label for="cnic" class="label">CNIC</label>
+            <el-input
+              placeholder="Without Dashes(-) or Spacing"
+              type="text"
+              id="cnic"
+              :maxlength="13"
+              :minlength="13"
+              class="inputbox"
+              name="cnic"
+              v-model="cnic"
+              required
+              onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
+            />
+          </div>
+          <div class="row" v-if="deptVisible">
+            <label for="dept" class="label">Department</label>
+            <el-select
+              v-model="deptName"
+              filterable
+              placeholder="Select"
+              style="width: 100%"
+              size="large"
+            >
+              <el-option
+                v-for="item in depts"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               />
-            </div>
-            <div class="row" v-if="cnicVisible">
-              <label for="cnic" class="label">CNIC</label>
-              <input
-                type="text"
-                id="cnic"
-                maxlength="13"
-                minlength="13"
-                class="inputbox"
-                name="cnic"
-                v-model="cnic"
-                required
-              />
-            </div>
-            <div class="row" v-if="deptVisible">
-              <label for="dept" class="label">Department</label>
-              <select id="deptName" v-model="deptName" name="deptName">
+            </el-select>
+            <!-- <select id="deptName" v-model="deptName" name="deptName" required>
                 <option
                   v-for="dept in depts"
                   :value="dept.name"
@@ -73,20 +101,48 @@
                 >
                   {{ dept.name }}
                 </option>
-              </select>
-            </div>
-            <div class="row" v-if="semsVisible">
-              <label for="semester" class="label">Semester</label>
-              <select id="semester" v-model="sems" name="semester">
+              </select> -->
+          </div>
+          <div class="row" v-if="semsVisible">
+            <label for="semester" class="label">Semester</label>
+            <el-select
+              v-model="sems"
+              filterable
+              placeholder="Select"
+              style="width: 100%"
+              size="large"
+            >
+              <el-option
+                v-for="item in semesters"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <!-- <select id="semester" v-model="sems" name="semester" required>
                 <option v-for="sem in semesters" :value="sem" v-bind:key="sem">
                   {{ sem }}
                 </option>
-              </select>
-            </div>
+              </select> -->
+          </div>
 
-            <div class="row" v-if="progVisible">
-              <label for="program" class="label">Program</label>
-              <select id="program" v-model="program" name="program">
+          <div class="row" v-if="progVisible">
+            <label for="program" class="label">Program</label>
+            <el-select
+              v-model="program"
+              filterable
+              placeholder="Select"
+              style="width: 100%"
+              size="large"
+            >
+              <el-option
+                v-for="(item, index) in programs"
+                :key="index"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <!-- <select id="program" v-model="program" name="program" required>
                 <option
                   v-for="prog in programs"
                   :value="prog"
@@ -94,63 +150,85 @@
                 >
                   {{ prog }}
                 </option>
-              </select>
-            </div>
+              </select> -->
+          </div>
 
-            <div class="row" v-if="ageVisible">
-              <label for="age" class="label">Age</label>
-              <input
-                type="number"
-                id="age"
-                maxlength="2"
-                minlength="2"
-                min="18"
-                max="60"
-                class="inputbox"
-                name="age"
-                v-model="age"
-                required
+          <div class="row" v-if="ageVisible">
+            <label for="age" class="label">Age</label>
+            <el-input
+              type="number"
+              id="age"
+              :maxlength="2"
+              :minlength="2"
+              :min="18"
+              :max="60"
+              class="inputbox"
+              name="age"
+              v-model="age"
+              required
+              onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
+            />
+          </div>
+          <div class="row" v-if="genderVisible">
+            <label for="gender" class="label">Gender</label>
+            <el-select
+              v-model="gender"
+              filterable
+              placeholder="Select"
+              style="width: 100%"
+              size="large"
+            >
+              <el-option
+                v-for="item in genders"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               />
-            </div>
-            <div class="row" v-if="genderVisible">
-              <label for="gender" class="label">Gender</label>
-              <select id="gender" v-model="gender" name="gender">
+            </el-select>
+            <!-- <select id="gender" v-model="gender" name="gender" required>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="others">Others</option>
-              </select>
-            </div>
-            <div class="row" v-if="hfeeVisible">
-              <label for="hostfee" class="label">Hostel Fee</label>
-              <input
-                type="number"
-                id="hostfee"
-                min="0"
-                max="1000000"
-                class="inputbox"
-                name="hostfee"
-                v-model="hostfee"
-              />
-            </div>
+              </select> -->
+          </div>
 
-            <div class="row" v-if="hfeeVisible">
-              <!-- <input type="file" @change="previewFiles" multiple> -->
-              <label for="hostfee" class="label">Select Image</label>
+          <div class="row" v-if="hfeeVisible">
+            <label for="hostfee" class="label"
+              >Hostel Fee
+              <label style="font-weight: normal; color: gray"
+                >(Optional)</label
+              ></label
+            >
+            <el-input
+              type="number"
+              id="hostfee"
+              :min="0"
+              :max="1000000"
+              class="inputbox"
+              name="hostfee"
+              v-model="hostfee"
+              onkeypress="if ( isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;"
+            />
+          </div>
+          <!-- <br /> -->
+          <div class="row" v-if="hfeeVisible">
+            <!-- <input type="file" @change="previewFiles" multiple> -->
+            <label for="hostfee" class="label">Upload Image</label>
 
-              <input type="file" @change="encodeImageFileAsURL($event)" />
-            </div>
-            <!-- <input type="file" name="" id="fileId" @change="imageUploaded()" /> -->
-            <button type="submit" class="buttons" v-if="addVisible">ADD</button>
-            <button type="submit" class="buttons" v-if="removeVisible">
-              REMOVE
-            </button>
-            <button type="submit" class="buttons" v-if="updatevisible">
-              UPDATE
-            </button>
-          </form>
-        </div>
-      </fieldset>
-    </div>
+            <input type="file" @change="encodeImageFileAsURL($event)" />
+          </div>
+          <!-- <input type="file" name="" id="fileId" @change="imageUploaded()" /> -->
+          <button type="submit" class="buttons" v-if="addVisible">ADD</button>
+          <button type="submit" class="buttons" v-if="removeVisible">
+            REMOVE
+          </button>
+          <button type="submit" class="buttons" v-if="updatevisible">
+            UPDATE
+          </button>
+        </form>
+      </div>
+    </fieldset>
+    <!-- </div> -->
   </div>
 </template>
 
@@ -168,6 +246,7 @@ function printIMG(img) {
 
 export default {
   name: "GenericForm",
+
   data() {
     return {
       len: 13,
@@ -182,6 +261,8 @@ export default {
       gender: "",
       deptName: "",
       hostfee: "",
+      program: "",
+      sems: "",
       depts: [],
       semesters: [],
       programs: [],
@@ -198,6 +279,11 @@ export default {
       ageVisible: true,
       genderVisible: true,
       progVisible: true,
+      genders: [
+        { value: "Male", option: "Male" },
+        { value: "Female", option: "Female" },
+        { value: "Others", option: "Others" },
+      ],
     };
   },
   mounted() {
@@ -267,8 +353,13 @@ export default {
         printIMG(reader.result);
         var proImage = new Image();
         proImage.src = reader.result;
-        proImage.width = 200;
-        proImage.height = 200;
+        proImage.style.width = "80%";
+        proImage.style.height = "80%";
+        proImage.style.border = "10px solid orange";
+        proImage.style.borderRadius = "10px";
+        proImage.style.display = "flex";
+        proImage.style.justifyContent = "center";
+        proImage.style.alignItems = "center";
         document.body.appendChild(proImage);
       };
       reader.readAsDataURL(file);
@@ -359,7 +450,8 @@ export default {
         img: image,
         qr: qr,
       };
-      console.log("payload ", payloadset.img);
+      console.log(payloadset);
+      // console.log("payload ", payloadset.img);
       if (this.button == "Add Student") {
         await axios
           .post("http://localhost:3000/save", payloadset)
@@ -486,26 +578,34 @@ export default {
 .row {
   display: flex;
   flex-direction: row;
+  margin: 2px;
+  padding: 3px;
+  /* justify-content: center; */
+  align-items: center;
+  /* background-color:red; */
+  /* border:1px solid black; */
 }
-
+.inputbox {
+  font-size: 1.3rem;
+}
 .label {
   width: 25%;
-  padding: 12px 20px;
+  /* padding: 5px; */
   margin-left: 0px;
   margin-right: 10px;
   font-weight: bold;
   text-align: left;
 }
 
-.inputbox,
+/* .inputbox, */
 select {
   width: 75%;
-  padding: 12px 20px;
-  margin: 8px 0;
+  /* padding: 12px 20px; */
+  /* margin: 8px 0; */
   display: inline-block;
   border: 1px solid rgb(43, 42, 44);
   border-radius: 4px;
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
 }
 
 .searchbox {
@@ -546,7 +646,7 @@ input[type="submit"]:hover {
 
 #intdiv {
   border-radius: 5px;
-  background-color: #f2f2f2;
-  padding: 20px;
+  /* background-color: #f2f2f2; */
+  padding: 10px;
 }
 </style>

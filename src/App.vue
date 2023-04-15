@@ -1,13 +1,14 @@
 <template>
   <div id="homeContainer">
     <div id="logoContainer">
-      <img alt="QAU logo" src="./assets/logo.png" id="imgStyle"/>
+      <img alt="QAU logo" src="./assets/logo.png" id="imgStyle" />
       <h1>Hostel Activity Monitor</h1>
     </div>
     <div id="loginContainer">
       <router-view></router-view>
     </div>
   </div>
+  
 </template>
 
 <script>
@@ -32,19 +33,19 @@ export default {
   flex-direction: column;
 }
 #logoContainer {
-
   display: flex;
   flex-direction: row;
   background-color: white;
   padding: 1rem;
+
 }
 
-#imgStyle{
-    width: 8rem;
-    height: 6rem;
-    margin-left:5rem ;
-    margin-right: 3rem;
-  }
+#imgStyle {
+  width: 8rem;
+  height: 6rem;
+  margin-left: 5rem;
+  margin-right: 3rem;
+}
 @media screen and (max-width: 1110px) {
   #homeContainer {
     width: 100%;
@@ -61,8 +62,9 @@ export default {
   #loginContainer {
     justify-content: center;
     margin: 1rem;
+  
   }
-  #imgStyle{
+  #imgStyle {
     width: 15rem;
     height: 15rem;
   }
@@ -75,7 +77,7 @@ export default {
     display: flex;
     flex-direction: column;
   }
-  #imgStyle{
+  #imgStyle {
     width: 6rem;
     height: 6rem;
   }

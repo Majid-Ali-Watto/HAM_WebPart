@@ -1,17 +1,27 @@
 <template>
   <div class="hello">
     <div>
-      <div style="display: flex; justify-content: space-around">
+      <div
+        style="
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+        "
+      >
         <label class="input">Reg No</label>
-        <input
+        <el-input
           type="text"
           v-model="regno"
-          maxlength="11"
-          minlength="11"
+          :maxlength="11"
+          :minlength="11"
           class="input"
           required
+          style="width: 60%"
+          onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
         />
-        <button class="input" @click="getStudent()">Search</button>
+        <el-button type="primary" class="input" @click="getStudent()"
+          >Search</el-button
+        >
       </div>
 
       <div v-if="showData" style="overflow-x: auto">
@@ -88,6 +98,7 @@
 
 <script>
 import axios from "axios";
+import { ElMessageBox } from "element-plus";
 
 export default {
   name: "ViewData",
@@ -128,7 +139,14 @@ export default {
     async getStudent() {
       let id = this.regno;
       if (id.length < 11) {
-        alert("Please enter valid registration number");
+        ElMessageBox.alert(
+          "Please enter valid registration number",
+          "Validate RegNo",
+          {
+            autofocus: true,
+            confirmButtonText: "OK",
+          }
+        );
         return;
       }
       await axios
@@ -153,7 +171,7 @@ export default {
 }
 .input {
   margin: 1rem;
-  padding: 0.5rem;
+  /* padding: 0.5rem; */
   font-weight: bold;
 }
 

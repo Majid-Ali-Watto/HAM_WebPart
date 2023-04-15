@@ -10,6 +10,8 @@
           minlength="13"
           class="input"
           required
+          onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
+
         />
         <button class="input" @click="getStudent()">Search</button>
       </div>

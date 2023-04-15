@@ -5,7 +5,7 @@
         <legend style="font-weight: bold; font-size: 1.5rem">Admin Data</legend>
         <form
           @submit.prevent="disp"
-          style="display: flex; flex-direction: column;align-items: stretch"
+          style="display: flex; flex-direction: column; align-items: stretch"
         >
           <input
             type="text"
@@ -16,15 +16,30 @@
             class="input"
             required
           />
-          <input
-            type="password"
-            v-model="password"
-            maxlength="15"
-            minlength="5"
-            placeholder="Enter Password"
-            class="input"
-            required
-          />
+          <div>
+            <input
+              type="password"
+              v-model="password"
+              maxlength="15"
+              minlength="5"
+              placeholder="Enter Password"
+              class="input"
+              required
+              v-if="!show"
+            />
+            <input
+              type="text"
+              v-model="password"
+              maxlength="15"
+              minlength="5"
+              placeholder="Enter Password"
+              class="input"
+              required
+              v-else
+            />
+            <button type="button" @click="setShow()" v-if="!show">Show</button>
+            <button type="button" @click="setShow()" v-else>Hide</button>
+          </div>
           <div>
             <button type="submit" id="button">Login</button>
           </div>
@@ -35,29 +50,42 @@
 </template>
 
 <script>
-import axios from "axios";
-
+// import axios from "axios";
+import { ref } from "vue";
 export default {
   name: "HelloWorld",
   props: {
     msg: String,
   },
+  setup() {
+    let show = ref(false);
+
+    // expose to template and other options API hooks
+    return {
+      show,
+    };
+  },
   methods: {
     async disp() {
-      await axios
-        .get("http://localhost:3000/admin")
-        .then((response) => {
-          if (
-            this.username == response.data[0].username &&
-            this.password == response.data[0].password
-          ) {
+      // await axios
+      //   .get("http://localhost:3000/admin")
+      //   .then((response) => {
+      //     if (
+      //       this.username == response.data[0].username &&
+      //       this.password == response.data[0].password
+      //     ) {
             this.$store.dispatch("setUser", "Admin");
             this.$router.push("/MainMenu");
-          } else alert("invalid credientials");
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
+        //   } else alert("invalid credientials");
+        // })
+        // .catch((error) => {
+        //   alert(error.message);
+        // });
+    },
+    setShow() {
+      console.log("show");
+      this.show = !this.show;
+      console.log(this.show);
     },
   },
 };
@@ -66,7 +94,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .hello {
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
 }

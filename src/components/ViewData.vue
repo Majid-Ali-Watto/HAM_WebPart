@@ -42,9 +42,18 @@
           <tr v-for="row in allData" v-bind:key="row.rollno">
             <td v-for="column in columnNames" v-bind:key="column">
               <div v-if="column == 'image'">
-                <img
+                <!-- <img
                   v-bind:src="row[column]"
-                  style="width: 100px; height: 100px"
+                  style="width: 50px; height: 50px"
+                /> -->
+                <el-image
+                  :src="row[column]"
+                  lazy
+                  style="width: 50px; height: 50px"
+                  :zoom-rate="1.2"
+                  :preview-src-list="[row[column]]"
+                  :initial-index="4"
+                  fit="cover"
                 />
               </div>
               <div v-else>
@@ -54,7 +63,10 @@
           </tr>
         </table>
 
-        <button @click="showData = false">Close</button>
+        <!-- <button @click="showData = false">Close</button> -->
+        <el-button type="primary" class="input" @click="showData = false"
+          >Close</el-button
+        >
       </div>
     </div>
     <!-- <div style="overflow-x: auto"> -->
@@ -62,7 +74,7 @@
       <table class="table">
         <tr>
           <th
-            style="background-color: green; color: black"
+            style="background-color: cyan; color: black"
             scope="col"
             v-for="column in columnNames"
             v-bind:key="column.value"
@@ -71,12 +83,19 @@
           </th>
         </tr>
 
-        <tr v-for="row in info" v-bind:key="row.rollno">
+        <tr v-for="row in info" v-bind:key="row.rollno" @click="showRow(row)">
           <td v-for="column in columnNames" v-bind:key="column">
             <div v-if="column == 'image'">
-              <img
-                v-bind:src="row[column]"
-                style="width: 100px; height: 100px"
+              <!-- <img v-bind:src="row[column]" style="width: 50px; height: 50px" />
+               -->
+              <el-image
+                :src="row[column]"
+                lazy
+                style="width: 50px; height: 50px"
+                :zoom-rate="1.2"
+                :preview-src-list="[row[column]]"
+                :initial-index="4"
+                fit="cover"
               />
             </div>
             <div v-else>
@@ -84,13 +103,6 @@
             </div>
           </td>
         </tr>
-        <!-- <tbody>
-        <tr v-for="row in info" v-bind:key="row.rollno">
-          <td v-for="column in columnNames" v-bind:key="column">
-           abc
-          </td>
-        </tr>
-      </tbody> -->
       </table>
     </div>
   </div>
@@ -110,6 +122,8 @@ export default {
       const names = new Set();
       for (const row of this.info) {
         for (const key of Object.keys(row)) {
+          console.log(key);
+          if (key == "did") continue;
           names.add(key);
         }
       }
@@ -125,6 +139,9 @@ export default {
     };
   },
   methods: {
+    showRow(row) {
+      console.log(row);
+    },
     async getData() {
       await axios
         .get("http://localhost:3000/students")
@@ -154,6 +171,7 @@ export default {
         .then((response) => {
           this.showData = true;
           this.allData = response.data;
+          console.log(response.data);
         })
         .catch((error) => {
           alert(error.message);
@@ -174,31 +192,26 @@ export default {
   /* padding: 0.5rem; */
   font-weight: bold;
 }
-
-table {
-  /* border-collapse: collapse; */
-  border-spacing: 0;
-  /* width: 100%; */
-
-  border: 1px solid rgb(28, 27, 27);
-  background-color: "white";
-}
-
-th,
-td {
-  text-align: left;
-  padding: 8px;
-  border: 1px solid rgb(157, 153, 153);
-}
 #tables {
   overflow-x: auto;
   width: 100%;
 }
-tr:nth-child(odd) {
-  background-color: rgb(246, 236, 236);
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: white;
 }
-tr:nth-child(even) {
-  background-color: #f2f2f2;
+
+th,
+td {
+  padding: 18px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  /* width: 300px; */
+}
+
+tr:hover {
+  background-color: #d6eeee;
 }
 @media screen and (max-width: 1220px) {
   #tables {

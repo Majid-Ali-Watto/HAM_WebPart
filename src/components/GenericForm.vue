@@ -1,7 +1,5 @@
 <template>
   <div class="hello">
-    <!-- <div> -->
-    <!-- <div> -->
     <div class="row" v-if="search">
       <label for="regno" class="label">{{ labelRegCNIC }}</label>
       <input
@@ -36,16 +34,6 @@
               v-model="name"
               required
             />
-            <!-- <input
-                type="text"
-                id="name"
-                maxlength="255"
-                minlength="3"
-                class="inputbox"
-                name="name"
-                v-model="name"
-                required
-              /> -->
           </div>
 
           <div class="row" v-if="regnoVisible">
@@ -93,15 +81,6 @@
                 :value="item.value"
               />
             </el-select>
-            <!-- <select id="deptName" v-model="deptName" name="deptName" required>
-                <option
-                  v-for="dept in depts"
-                  :value="dept.name"
-                  v-bind:key="dept.name"
-                >
-                  {{ dept.name }}
-                </option>
-              </select> -->
           </div>
           <div class="row" v-if="semsVisible">
             <label for="semester" class="label">Semester</label>
@@ -119,11 +98,6 @@
                 :value="item.value"
               />
             </el-select>
-            <!-- <select id="semester" v-model="sems" name="semester" required>
-                <option v-for="sem in semesters" :value="sem" v-bind:key="sem">
-                  {{ sem }}
-                </option>
-              </select> -->
           </div>
 
           <div class="row" v-if="progVisible">
@@ -142,15 +116,6 @@
                 :value="item.value"
               />
             </el-select>
-            <!-- <select id="program" v-model="program" name="program" required>
-                <option
-                  v-for="prog in programs"
-                  :value="prog"
-                  v-bind:key="prog"
-                >
-                  {{ prog }}
-                </option>
-              </select> -->
           </div>
 
           <div class="row" v-if="ageVisible">
@@ -185,20 +150,10 @@
                 :value="item.value"
               />
             </el-select>
-            <!-- <select id="gender" v-model="gender" name="gender" required>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="others">Others</option>
-              </select> -->
           </div>
 
           <div class="row" v-if="hfeeVisible">
-            <label for="hostfee" class="label"
-              >Hostel Fee
-              <label style="font-weight: normal; color: gray"
-                >(Optional)</label
-              ></label
-            >
+            <label for="hostfee" class="label">Hostel Fee </label>
             <el-input
               type="number"
               id="hostfee"
@@ -207,16 +162,35 @@
               class="inputbox"
               name="hostfee"
               v-model="hostfee"
+              required
               onkeypress="if ( isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;"
             />
           </div>
           <!-- <br /> -->
-          <div class="row" v-if="hfeeVisible">
+          <div class="row" v-if="addVisible">
             <!-- <input type="file" @change="previewFiles" multiple> -->
-            <label for="hostfee" class="label">Upload Image</label>
+            <label for="image" class="label">Upload Image</label>
 
             <input type="file" @change="encodeImageFileAsURL($event)" />
           </div>
+          <div
+            class="row"
+            v-if="removeVisible || updatevisible"
+            style="display: flex; justify-content: center"
+          >
+            <div class="demo-image__preview">
+              <el-image
+                :src="image"
+                lazy
+                style="width: 100px; height: 100px"
+                :zoom-rate="1.2"
+                :preview-src-list="srcList"
+                :initial-index="4"
+                fit="cover"
+              />
+            </div>
+          </div>
+
           <!-- <input type="file" name="" id="fileId" @change="imageUploaded()" /> -->
           <button type="submit" class="buttons" v-if="addVisible">ADD</button>
           <button type="submit" class="buttons" v-if="removeVisible">
@@ -237,11 +211,39 @@ import axios from "axios";
 import depts from "../assets/Departments/dept";
 import semesters from "../assets/Semesters/semester";
 import programs from "@/assets/Programs/programs";
-// import * as fs from 'fs';
+import { ElMessageBox } from "element-plus";
 import { getBase64EncodedRegNo } from "@/QR/qrCreater";
 let image = "";
 function printIMG(img) {
   image = img;
+}
+async function apiCall(method, endpoint, payload) {
+  try {
+    const response = await axios[method](endpoint, payload);
+    return response.data;
+  } catch (error) {
+    showMessage(error);
+  }
+}
+function showMessage(msg) {
+  ElMessageBox.alert(msg, "Validate RegNo", {
+    autofocus: true,
+    confirmButtonText: "OK",
+  });
+}
+function newFunction(reader, disp) {
+  var proImage = new Image();
+  proImage.style.display = disp;
+  proImage.src = reader.result;
+  proImage.id = "imgAdd";
+  proImage.style.width = "80%";
+  proImage.style.height = "80%";
+  proImage.style.border = "10px solid orange";
+  proImage.style.borderRadius = "10px";
+  proImage.style.justifyContent = "center";
+  proImage.style.alignItems = "center";
+  console.log(proImage);
+  document.body.appendChild(proImage);
 }
 
 export default {
@@ -279,6 +281,8 @@ export default {
       ageVisible: true,
       genderVisible: true,
       progVisible: true,
+      image: image,
+      srcList: [],
       genders: [
         { value: "Male", option: "Male" },
         { value: "Female", option: "Female" },
@@ -351,16 +355,7 @@ export default {
       var reader = new FileReader();
       reader.onloadend = function () {
         printIMG(reader.result);
-        var proImage = new Image();
-        proImage.src = reader.result;
-        proImage.style.width = "80%";
-        proImage.style.height = "80%";
-        proImage.style.border = "10px solid orange";
-        proImage.style.borderRadius = "10px";
-        proImage.style.display = "flex";
-        proImage.style.justifyContent = "center";
-        proImage.style.alignItems = "center";
-        document.body.appendChild(proImage);
+        newFunction(reader, "flex");
       };
       reader.readAsDataURL(file);
     },
@@ -431,11 +426,11 @@ export default {
       this.sems = val.semno;
       this.hostfee = val.hostelfee;
       this.program = val.program;
+      this.image = val.image;
+      this.srcList.push(val.image);
     },
 
     async submit() {
-      let qr = getBase64EncodedRegNo(this.regno);
-
       const payloadset = {
         name: this.name,
         rollno: this.regno,
@@ -448,122 +443,207 @@ export default {
         rollN: this.regnoSearch,
         program: this.program,
         img: image,
-        qr: qr,
       };
       console.log(payloadset);
-      // console.log("payload ", payloadset.img);
-      if (this.button == "Add Student") {
-        await axios
-          .post("http://localhost:3000/save", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Remove Student") {
-        await axios
-          .delete(`http://localhost:3000/remove/${this.regnoSearch}`)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Update Student") {
-        await axios
-          .patch("http://localhost:3000/update", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Add Hostel Warden") {
-        await axios
-          .post("http://localhost:3000/saveHW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Remove Hostel Warden") {
-        await axios
-          .delete(`http://localhost:3000/removeHW/${this.regnoSearch}`)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Update Hostel Warden") {
-        await axios
-          .patch("http://localhost:3000/updateHW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Add Mess Warden") {
-        await axios
-          .post("http://localhost:3000/saveMW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Remove Mess Warden") {
-        await axios
-          .delete(`http://localhost:3000/removeMW/${this.regnoSearch}`)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Update Mess Warden") {
-        await axios
-          .patch("http://localhost:3000/updateMW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Add Security Warden") {
-        await axios
-          .post("http://localhost:3000/saveSW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Remove Security Warden") {
-        await axios
-          .delete(`http://localhost:3000/removeSW/${this.regnoSearch}`)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Update Security Warden") {
-        await axios
-          .patch("http://localhost:3000/updateSW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
+      switch (this.button) {
+        case "Add Student":
+          {
+            let qr = getBase64EncodedRegNo(this.regno);
+            payloadset["qr"] = qr;
+            let node = document.getElementById("imgAdd");
+            if (node.parentNode) {
+              node.parentNode.removeChild(node);
+            }
+            await apiCall("post", "http://localhost:3000/save", payloadset);
+          }
+          break;
+        case "Remove Student":
+          await apiCall(
+            "delete",
+            `http://localhost:3000/remove/${this.regnoSearch}`
+          );
+          break;
+        case "Update Student":
+          {
+            const msg = await apiCall(
+              "patch",
+              "http://localhost:3000/update",
+              payloadset
+            );
+            showMessage(msg);
+          }
+          break;
+        case "Add Hostel Warden":
+          await apiCall("post", "http://localhost:3000/saveHW", payloadset);
+          break;
+        case "Remove Hostel Warden":
+          await apiCall(
+            "delete",
+            `http://localhost:3000/removeHW/${this.regnoSearch}`
+          );
+          break;
+        case "Update Hostel Warden":
+          await apiCall("patch", "http://localhost:3000/updateHW", payloadset);
+          break;
+        case "Add Mess Warden":
+          await apiCall("post", "http://localhost:3000/saveMW", payloadset);
+          break;
+        case "Remove Mess Warden":
+          await apiCall(
+            "delete",
+            `http://localhost:3000/removeMW/${this.regnoSearch}`
+          );
+          break;
+        case "Update Mess Warden":
+          await apiCall("patch", "http://localhost:3000/updateMW", payloadset);
+          break;
+        case "Add Security Warden":
+          await apiCall("post", "http://localhost:3000/saveSW", payloadset);
+          break;
+        case "Remove Security Warden":
+          await apiCall(
+            "delete",
+            `http://localhost:3000/removeSW/${this.regnoSearch}`
+          );
+          break;
+        case "Update Security Warden":
+          await apiCall("patch", "http://localhost:3000/updateSW", payloadset);
+          break;
       }
+
       this.$router.go(-1);
-      // this.$router.push("/"+this.button);
     },
+    // async submit() {
+    //   let qr = getBase64EncodedRegNo(this.regno);
+
+    //   const payloadset = {
+    //     name: this.name,
+    //     rollno: this.regno,
+    //     cnic: this.cnic,
+    //     gender: this.gender,
+    //     dept: this.deptName,
+    //     age: this.age,
+    //     semester: this.sems,
+    //     hostfee: this.hostfee,
+    //     rollN: this.regnoSearch,
+    //     program: this.program,
+    //     img: image,
+    //     qr: qr,
+    //   };
+    //   console.log(payloadset);
+    //   // console.log("payload ", payloadset.img);
+    //   if (this.button == "Add Student") {
+    //     await axios
+    //       .post("http://localhost:3000/save", payloadset)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Remove Student") {
+    //     await axios
+    //       .delete(`http://localhost:3000/remove/${this.regnoSearch}`)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Update Student") {
+    //     await axios
+    //       .patch("http://localhost:3000/update", payloadset)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Add Hostel Warden") {
+    //     await axios
+    //       .post("http://localhost:3000/saveHW", payloadset)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Remove Hostel Warden") {
+    //     await axios
+    //       .delete(`http://localhost:3000/removeHW/${this.regnoSearch}`)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Update Hostel Warden") {
+    //     await axios
+    //       .patch("http://localhost:3000/updateHW", payloadset)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Add Mess Warden") {
+    //     await axios
+    //       .post("http://localhost:3000/saveMW", payloadset)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Remove Mess Warden") {
+    //     await axios
+    //       .delete(`http://localhost:3000/removeMW/${this.regnoSearch}`)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Update Mess Warden") {
+    //     await axios
+    //       .patch("http://localhost:3000/updateMW", payloadset)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Add Security Warden") {
+    //     await axios
+    //       .post("http://localhost:3000/saveSW", payloadset)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Remove Security Warden") {
+    //     await axios
+    //       .delete(`http://localhost:3000/removeSW/${this.regnoSearch}`)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   } else if (this.button == "Update Security Warden") {
+    //     await axios
+    //       .patch("http://localhost:3000/updateSW", payloadset)
+    //       .then((response) => {
+    //         alert(response.data);
+    //       })
+    //       .catch((error) => {
+    //         alert(error);
+    //       });
+    //   }
+    //   this.$router.go(-1);
+    //   // this.$router.push("/"+this.button);
+    // },
   },
 };
 </script>
@@ -580,32 +660,24 @@ export default {
   flex-direction: row;
   margin: 2px;
   padding: 3px;
-  /* justify-content: center; */
   align-items: center;
-  /* background-color:red; */
-  /* border:1px solid black; */
 }
 .inputbox {
   font-size: 1.3rem;
 }
 .label {
   width: 25%;
-  /* padding: 5px; */
   margin-left: 0px;
   margin-right: 10px;
   font-weight: bold;
   text-align: left;
 }
 
-/* .inputbox, */
 select {
   width: 75%;
-  /* padding: 12px 20px; */
-  /* margin: 8px 0; */
   display: inline-block;
   border: 1px solid rgb(43, 42, 44);
   border-radius: 4px;
-  /* box-sizing: border-box; */
 }
 
 .searchbox {
@@ -627,6 +699,7 @@ select {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bolder;
 }
 
 #search {
@@ -648,5 +721,16 @@ input[type="submit"]:hover {
   border-radius: 5px;
   /* background-color: #f2f2f2; */
   padding: 10px;
+}
+
+.demo-image__error .image-slot {
+  font-size: 30px;
+}
+.demo-image__error .image-slot .el-icon {
+  font-size: 30px;
+}
+.demo-image__error .el-image {
+  width: 100%;
+  height: 200px;
 }
 </style>

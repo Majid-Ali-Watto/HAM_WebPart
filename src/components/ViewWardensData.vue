@@ -11,37 +11,14 @@
           class="input"
           required
           onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
-
         />
         <button class="input" @click="getStudent()">Search</button>
       </div>
-      <fieldset v-if="showData">
-        <legend style="font-weight: bold">Details</legend>
-
-        <table>
-          <tr>
-            <th
-              style="background-color: green; color: black"
-              scope="col"
-              v-for="column in columnNames"
-              v-bind:key="column.value"
-            >
-              {{ column.toUpperCase() }}
-            </th>
-          </tr>
-
-          <tr v-for="row in allData" v-bind:key="row.rollno">
-            <td v-for="column in columnNames" v-bind:key="column">
-              {{ row[column] }}
-            </td>
-          </tr>
-        </table>
-
-        <button @click="showData = false">Close</button>
-      </fieldset>
     </fieldset>
-    <div style="overflow-x: auto">
-      <table class="table">
+    <div v-if="showData" style="overflow-x: auto">
+      <legend style="font-weight: bold">Details</legend>
+
+      <table>
         <tr>
           <th
             style="background-color: green; color: black"
@@ -53,13 +30,71 @@
           </th>
         </tr>
 
-        <tr v-for="row in info" v-bind:key="row.rollno">
+        <tr v-for="row in allData" v-bind:key="row.cnic">
           <td v-for="column in columnNames" v-bind:key="column">
-            {{ row[column] }}
+            <div v-if="column == 'image'">
+              <!-- <img
+                  v-bind:src="row[column]"
+                  style="width: 50px; height: 50px"
+                /> -->
+              <el-image
+                :src="row[column]"
+                lazy
+                style="width: 50px; height: 50px"
+                :zoom-rate="1.2"
+                :preview-src-list="[row[column]]"
+                :initial-index="4"
+                fit="cover"
+              />
+            </div>
+            <div v-else>
+              {{ row[column] }}
+            </div>
           </td>
         </tr>
       </table>
+
+      <!-- <button @click="showData = false">Close</button> -->
+      <el-button type="primary" class="input" @click="showData = false"
+        >Close</el-button
+      >
     </div>
+  </div>
+  <!-- <div style="overflow-x: auto"> -->
+  <div id="tables">
+    <table class="table">
+      <tr>
+        <th
+          style="background-color: cyan; color: black"
+          scope="col"
+          v-for="column in columnNames"
+          v-bind:key="column.value"
+        >
+          {{ column.toUpperCase() }}
+        </th>
+      </tr>
+
+      <tr v-for="row in info" v-bind:key="row.rollno">
+        <td v-for="column in columnNames" v-bind:key="column">
+          <div v-if="column == 'image'">
+            <!-- <img v-bind:src="row[column]" style="width: 50px; height: 50px" />
+               -->
+            <el-image
+              :src="row[column]"
+              lazy
+              style="width: 50px; height: 50px"
+              :zoom-rate="1.2"
+              :preview-src-list="[row[column]]"
+              :initial-index="4"
+              fit="cover"
+            />
+          </div>
+          <div v-else>
+            {{ row[column] }}
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -92,7 +127,7 @@ export default {
   },
   methods: {
     async getData(user) {
-      let u=''
+      let u = "";
       if (user == "View Security Warden") u = "security";
       else if (user == "View Mess Warden") u = "mess";
       else u = "hostel";
@@ -107,8 +142,8 @@ export default {
     },
 
     async getStudent() {
-      let u=''
-      let user=this.$store.getters.getUser
+      let u = "";
+      let user = this.$store.getters.getUser;
       if (user == "View Security Warden") u = "security";
       else if (user == "View Mess Warden") u = "mess";
       else u = "hostel";

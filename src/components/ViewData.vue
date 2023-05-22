@@ -56,7 +56,6 @@
 				<el-button type="primary" class="input" @click="showData = false">Close</el-button>
 			</div>
 		</div>
-		<!-- <div style="overflow-x: auto"> -->
 		<div id="tables">
 			<table class="table">
 				<tr>
@@ -182,7 +181,7 @@
 
 	th,
 	td {
-		padding: 15px;
+		padding: 10px;
 		text-align: left;
 		border-bottom: 1px solid #ddd;
 		width: fit-content;

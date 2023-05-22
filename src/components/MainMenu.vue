@@ -1,11 +1,6 @@
 <template>
     <div class="hello">
-        <div>
-            <fieldset style="background-color: lightgreen;display: flex;flex-direction: column;">
-                <legend style="font-weight: bold; font-size: 1.5rem">Choose One</legend>
                 <button id="button" v-for="l in list" :key="l" @click="moveTo(l.name, l.option)">{{ l.option }}</button>
-            </fieldset>
-        </div>
     </div>
 </template>
 
@@ -27,21 +22,32 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.hello {
+.hello{
+    display: flex;
+    flex-direction: row;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
 }
 
 
 #button {
-    background-color: white;
-    width: 100%;
+    /* background-color: white; */
+    background-color: #555555;
+    width: 15rem;
     height: 5rem;
     font-weight: bold;
     font-size: 1.5rem;
-    color: black;
+    color: white;
     padding: 0.5rem;
     margin-bottom: 0.5rem;
-    border-radius: 20px;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem;
+    text-transform: uppercase;
+
 }
+
 </style>

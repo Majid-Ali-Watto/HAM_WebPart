@@ -24,13 +24,13 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin: 0%;
-  box-sizing: border-box;
+ 
 }
 #homeContainer {
   width: 100%;
   display: flex;
   flex-direction: column;
+  
 }
 #logoContainer {
   display: flex;
@@ -39,6 +39,12 @@ export default {
   padding: 1rem;
 
 }
+#loginContainer {
+    justify-content: center;
+    margin: 1rem;
+    width: 100%;
+    height: 100%;
+  }
 
 #imgStyle {
   width: 8rem;

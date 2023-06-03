@@ -92,7 +92,7 @@
 <script>
 	import axios from "axios";
 	import { ElMessageBox } from "element-plus";
-
+	import VUE_APP_URL from "@/assets/url";
 	export default {
 		name: "ViewData",
 		mounted() {
@@ -125,7 +125,7 @@
 			},
 			async getData() {
 				await axios
-					.get("http://localhost:3000/students")
+					.get(`${VUE_APP_URL}/students`)
 					.then((response) => {
 						this.info = response.data;
 					})
@@ -144,7 +144,7 @@
 					return;
 				}
 				await axios
-					.get(`http://localhost:3000/students/${id}`)
+					.get(`${VUE_APP_URL}/students/${id}`)
 					.then((response) => {
 						this.showData = true;
 						this.allData = response.data;

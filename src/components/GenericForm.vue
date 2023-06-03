@@ -15,7 +15,7 @@
 				required
 				onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
 			/>
-			<button id="search" @click="search">Search</button>
+			<button id="search" @click="searchUsr">Search</button>
 		</div>
 		<!-- </div> -->
 		<fieldset style="border-color: black">
@@ -152,6 +152,7 @@
 	import programs from "@/assets/Programs/programs";
 	import { ElMessageBox } from "element-plus";
 	import { getBase64EncodedRegNo } from "@/QR/qrCreater";
+	import VUE_APP_URL from "@/assets/url";
 	let image = "";
 	function printIMG(img) {
 		image = img;
@@ -222,6 +223,7 @@
 				ageVisible: true,
 				genderVisible: true,
 				progVisible: true,
+				search: true,
 				image: image,
 				srcList: [],
 				genders: [
@@ -233,6 +235,7 @@
 		},
 		mounted() {
 			this.user = this.$store.getters.getUser;
+			console.log(this.user);
 			this.depts = depts;
 			this.semesters = semesters;
 			this.programs = programs;
@@ -240,15 +243,13 @@
 			if (this.button == "Add Student") {
 				this.showAdd();
 			} else if (this.button == "Remove Student") {
-				this.setRegoandLen();
+				this.setRegandLen();
 				this.showRemove();
 				this.searchUser = "students";
-				document.getElementById("regno").focus();
 			} else if (this.button == "Update Student") {
-				this.setRegoandLen();
+				this.setRegandLen();
 				this.showUpdate();
 				this.searchUser = "students";
-				document.getElementById("regno").focus();
 			} else if (this.button == "Add Hostel Warden") {
 				this.showAdd();
 				this.hide();
@@ -381,7 +382,7 @@
 				this.updatevisible = true;
 				this.removeVisible = false;
 			},
-			setRegoandLen() {
+			setRegandLen() {
 				this.labelRegCNIC = "Reg No.";
 				this.len = 11;
 			},
@@ -389,7 +390,7 @@
 				this.labelRegCNIC = "CNIC";
 				this.len = 13;
 			},
-			async search() {
+			async searchUsr() {
 				let id = this.regnoSearch;
 				if (this.button.includes("Student") && id.length < 11) {
 					alert("RegNo must be 11 digits");
@@ -399,7 +400,7 @@
 					return;
 				}
 				try {
-					let response = await axios.get(`http://localhost:3000/${this.searchUser}/${id}`);
+					let response = await axios.get(`${VUE_APP_URL}/${this.searchUser}/${id}`);
 					console.log(response.data[0]);
 					this.setData(response.data[0]);
 				} catch (error) {
@@ -424,18 +425,31 @@
 				this.image = val.image;
 				this.srcList.push(val.image);
 			},
-
+			capatilize(str) {
+				console.log("str ", str);
+				if (str == undefined || str == null || str == "") return;
+				let name = str.split(" ");
+				console.log("name ", name);
+				name = name.map((n) => {
+					console.log(n);
+					return n[0].toUpperCase() + n.substring(1);
+				});
+				console.log(name);
+				console.log(name.join(" "));
+				return name.join(" ");
+			},
 			async submit() {
+				let n = this.capatilize(this.name.replace(/\s+/g, " ").trim());
 				const payloadset = {
-					name: this.name,
-					rollno: this.regno,
-					cnic: this.cnic,
+					name: n,
+					rollno: this.regno.replace(/\s+/g, " ").trim(),
+					cnic: this.cnic.replace(/\s+/g, " ").trim(),
 					gender: this.gender,
 					dept: this.deptName,
-					age: this.age,
+					age: this.age.replace(/\s+/g, " ").trim(),
 					semester: this.sems,
-					hostfee: this.hostfee,
-					rollN: this.regnoSearch,
+					hostfee: this.hostfee.replace(/\s+/g, " ").trim(),
+					rollN: this.regnoSearch.replace(/\s+/g, " ").trim(),
 					program: this.program,
 					img: image,
 				};
@@ -449,7 +463,7 @@
 							if (node.parentNode) {
 								node.parentNode.removeChild(node);
 							}
-							const imageUrl = await apiCall("post", "http://localhost:3000/save", payloadset);
+							const imageUrl = await apiCall("post", `${VUE_APP_URL}/students/saveStud`, payloadset);
 							const linkSource = `${imageUrl}`;
 							const downloadLink = document.createElement("a");
 							downloadLink.href = linkSource;
@@ -458,43 +472,70 @@
 						}
 						break;
 					case "Remove Student":
-						await apiCall("delete", `http://localhost:3000/remove/${this.regnoSearch}`);
+						{
+							const msg = await apiCall("delete", `${VUE_APP_URL}/students/removeStud/${this.regnoSearch}`);
+							showMessage(msg);
+						}
 						break;
 					case "Update Student":
 						{
-							const msg = await apiCall("patch", "http://localhost:3000/update", payloadset);
+							const msg = await apiCall("patch", `${VUE_APP_URL}/students/updateStud`, payloadset);
 							showMessage(msg);
 						}
 						break;
 					case "Add Hostel Warden":
-						await apiCall("post", "http://localhost:3000/saveHW", payloadset);
+						{
+							const msg = await apiCall("post", `${VUE_APP_URL}/hostelSupervisor/saveHW`, payloadset);
+							showMessage(msg);
+						}
 						break;
 					case "Remove Hostel Warden":
-						await apiCall("delete", `http://localhost:3000/removeHW/${this.regnoSearch}`);
+						{
+							const msg = await apiCall("delete", `${VUE_APP_URL}/hostelSupervisor/removeHW/${this.regnoSearch}`);
+							showMessage(msg);
+						}
 						break;
 					case "Update Hostel Warden":
-						await apiCall("patch", "http://localhost:3000/updateHW", payloadset);
+						{
+							const msg = await apiCall("patch", `${VUE_APP_URL}/hostelSupervisor/updateHW`, payloadset);
+							showMessage(msg);
+						}
 						break;
 					case "Add Mess Warden":
-						await apiCall("post", "http://localhost:3000/saveMW", payloadset);
+						{
+							const msg = await apiCall("post", `${VUE_APP_URL}/messSupervisor/saveMW`, payloadset);
+							showMessage(msg);
+						}
 						break;
 					case "Remove Mess Warden":
-						await apiCall("delete", `http://localhost:3000/removeMW/${this.regnoSearch}`);
+						{
+							const msg = await apiCall("delete", `${VUE_APP_URL}/messSupervisor/removeMW/${this.regnoSearch}`);
+							showMessage(msg);
+						}
 						break;
 					case "Update Mess Warden":
-						await apiCall("patch", "http://localhost:3000/updateMW", payloadset);
+						{
+							const msg = await apiCall("patch", `${VUE_APP_URL}/messSupervisor/updateMW`, payloadset);
+							showMessage(msg);
+						}
 						break;
 					case "Add Security Warden":
 						{
-							const msg = await apiCall("post", "http://localhost:3000/saveSW", payloadset);
+							const msg = await apiCall("post", `${VUE_APP_URL}/securitySupervisor/saveSW`, payloadset);
 							showMessage(msg);
 						}
 						break;
 					case "Remove Security Warden":
-						await apiCall("delete", `http://localhost:3000/removeSW/${this.regnoSearch}`);
+						{
+							const msg = await apiCall("delete", `${VUE_APP_URL}/securitySupervisor/removeSW/${this.regnoSearch}`);
+							showMessage(msg);
+						}
 						break;
 					case "Update Security Warden":
-						await apiCall("patch", "http://localhost:3000/updateSW", payloadset);
+						{
+							const msg = await apiCall("patch", `${VUE_APP_URL}/securitySupervisor/updateSW`, payloadset);
+							showMessage(msg);
+						}
 						break;
 				}
 

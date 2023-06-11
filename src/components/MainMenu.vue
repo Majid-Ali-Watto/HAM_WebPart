@@ -3,8 +3,9 @@
 <template>
 	<div class="hello">
 		<div id="card" v-for="l in list" :key="l" @click="moveTo(l.name, l.option)">
-			<button id="button">{{ l.option }}</button>
 			<img :src="l.img" alt="Image" id="img" />
+			<button id="button">{{ l.option }}</button>
+			
 		</div>
 	</div>
 </template>
@@ -31,6 +32,8 @@
 		flex-direction: row;
 		justify-content: center;
 		flex-wrap: wrap;
+		margin: 0 auto !important;
+
 		/* align-items: center; */
 	}
 
@@ -52,28 +55,35 @@
 		/* margin: 1rem; */
 		text-transform: uppercase;
 		cursor: pointer;
+		user-select: none;
+		margin-top:auto
 	}
 	#card {
+		padding: 80px 0px 0px 0px;
 		background-color: white;
 		/* background-color: #555555; */
 		width: 17rem;
-		height: 30rem;
+		height: 16rem;
 		font-weight: bold;
 		font-size: 1.5rem;
 		/* padding: 0.5rem; */
 		/* border: 1px solid white; */
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: space-around;
 		align-items: center;
 		margin: 1rem;
 		box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 		cursor: pointer;
+		gap:20px
 	}
 	#img {
-		width: 17rem;
-		height: 25rem;
+		width: 80px;
+		/* height: 25rem; */
 		background-repeat: no-repeat;
 		padding: 5px;
+		user-select: none;
+		-webkit-user-drag: none;
+
 	}
 </style>

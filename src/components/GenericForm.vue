@@ -1,30 +1,43 @@
 <!-- @format -->
 
 <template>
-	<div class="hello">
-		<div class="row" v-if="search">
-			<label for="regno" class="label">{{ labelRegCNIC }}</label>
-			<input
+	<div class="hello" @copy.prevent @paste.prevent>
+		<legend style="font-weight: bold; font-size: 1.5rem">{{ user }} Data</legend>
+		<hr />
+		<div v-if="search" id="searchSection" style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
+			<label for="regno" class="searchLabel">{{ labelRegCNIC }}</label>
+			<el-input
 				type="text"
-				id="regno"
+				v-model="regnoSearch"
 				:maxlength="len"
 				:minlength="len"
-				class="searchbox"
-				name="regno"
-				v-model="regnoSearch"
+				class="input"
 				required
+				style="width: 30%"
 				onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
 			/>
-			<button id="search" @click="searchUsr">Search</button>
+			<el-button type="primary" class="input" @click="searchUsr">Search</el-button>
 		</div>
-		<!-- </div> -->
-		<fieldset style="border-color: black">
-			<legend style="font-weight: bold; font-size: 1.5rem">{{ user }} Data</legend>
+
+		<div style="border-color: black; margin: 0.5rem auto" id="formSection">
 			<div id="intdiv">
-				<form @submit.prevent="submit" style="padding: 0%; margin: 0%">
+				<form
+					@submit.prevent="submit"
+					style="padding: 0%; margin: 0%; box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5); transform: translateY(5px)"
+				>
 					<div class="row" v-if="nameVisible">
 						<label for="name" class="label">Name</label>
-						<el-input type="text" id="name" :maxlength="255" :minlength="3" class="inputbox" name="name" v-model="name" required />
+						<el-input
+							type="text"
+							id="name"
+							:maxlength="255"
+							:minlength="3"
+							class="inputbox"
+							name="name"
+							v-model="name"
+							required
+							pattern="[A-Za-z.\- ]+"
+						/>
 					</div>
 
 					<div class="row" v-if="regnoVisible">
@@ -58,21 +71,21 @@
 					</div>
 					<div class="row" v-if="deptVisible">
 						<label for="dept" class="label">Department</label>
-						<el-select v-model="deptName" filterable placeholder="Select" style="width: 100%" size="large">
-							<el-option v-for="item in depts" :key="item.value" :label="item.label" :value="item.value" />
+						<el-select v-model="deptName" filterable effect="dark" placeholder="Select" style="width: 100%" size="large">
+							<el-option required v-for="item in depts" :key="item.value" :label="item.label" :value="item.value" />
 						</el-select>
 					</div>
 					<div class="row" v-if="semsVisible">
 						<label for="semester" class="label">Semester</label>
-						<el-select v-model="sems" filterable placeholder="Select" style="width: 100%" size="large">
-							<el-option v-for="item in semesters" :key="item.value" :label="item.label" :value="item.value" />
+						<el-select required v-model="sems" filterable effect="dark" placeholder="Select" style="width: 100%" size="large">
+							<el-option required v-for="item in semesters" :key="item.value" :label="item.label" :value="item.value" />
 						</el-select>
 					</div>
 
 					<div class="row" v-if="progVisible">
 						<label for="program" class="label">Program</label>
-						<el-select v-model="program" filterable placeholder="Select" style="width: 100%" size="large">
-							<el-option v-for="(item, index) in programs" :key="index" :label="item.label" :value="item.value" />
+						<el-select required v-model="program" filterable effect="dark" placeholder="Select" style="width: 100%" size="large">
+							<el-option required v-for="(item, index) in programs" :key="index" :label="item.label" :value="item.value" />
 						</el-select>
 					</div>
 
@@ -94,8 +107,8 @@
 					</div>
 					<div class="row" v-if="genderVisible">
 						<label for="gender" class="label">Gender</label>
-						<el-select v-model="gender" filterable placeholder="Select" style="width: 100%" size="large">
-							<el-option v-for="item in genders" :key="item.value" :label="item.label" :value="item.value" />
+						<el-select required v-model="gender" filterable effect="dark" placeholder="Select" style="width: 100%" size="large">
+							<el-option required v-for="item in genders" :key="item.value" :label="item.label" :value="item.value" />
 						</el-select>
 					</div>
 
@@ -114,11 +127,10 @@
 						/>
 					</div>
 					<!-- <br /> -->
-					<div class="row" v-if="addVisible">
-						<!-- <input type="file" @change="previewFiles" multiple> -->
+					<div class="row" v-if="addVisible || updatevisible">
 						<label for="image" class="label">Upload Image</label>
 
-						<input type="file" @change="encodeImageFileAsURL($event)" />
+						<input type="file" accept="image/*" @change="encodeImageFileAsURL($event)" required />
 					</div>
 					<div class="row" v-if="removeVisible || updatevisible" style="display: flex; justify-content: center">
 						<div class="demo-image__preview">
@@ -133,14 +145,18 @@
 							/>
 						</div>
 					</div>
+					<div class="row" v-if="addVisible" style="display: flex; justify-content: center">
+						<div class="demo-image__preview">
+							<img src="#" style="width: 100px; height: 100px" id="addImg" alt="Image here" />
+						</div>
+					</div>
 
-					<!-- <input type="file" name="" id="fileId" @change="imageUploaded()" /> -->
 					<button type="submit" class="buttons" v-if="addVisible">ADD</button>
 					<button type="submit" class="buttons" v-if="removeVisible">REMOVE</button>
 					<button type="submit" class="buttons" v-if="updatevisible">UPDATE</button>
 				</form>
 			</div>
-		</fieldset>
+		</div>
 		<!-- </div> -->
 	</div>
 </template>
@@ -156,36 +172,27 @@
 	let image = "";
 	function printIMG(img) {
 		image = img;
-		console.log(image);
 	}
 	async function apiCall(method, endpoint, payload) {
 		try {
 			const response = await axios[method](endpoint, payload);
 			return response.data;
 		} catch (error) {
-			showMessage(error);
+			ElMessageBox.alert(error.message.toString(), "Error", {
+				autofocus: true,
+				confirmButtonText: "OK",
+				type: "error",
+			});
 		}
 	}
-	function showMessage(msg) {
-		ElMessageBox.alert(msg, "Validate RegNo", {
+	async function showMessage(msg, event) {
+		if (!msg) return;
+		ElMessageBox.alert(msg, "Message", {
 			autofocus: true,
 			confirmButtonText: "OK",
+		}).then(function () {
+			event.go(-1);
 		});
-	}
-	function newFunction(reader, disp) {
-		var proImage = new Image();
-		proImage.style.display = disp;
-		// proImage.src = reader.result;
-		proImage.src = reader;
-		proImage.id = "imgAdd";
-		// proImage.style.width = "80%";
-		// proImage.style.height = "80%";
-		// proImage.style.border = "10px solid orange";
-		// proImage.style.borderRadius = "10px";
-		// proImage.style.justifyContent = "center";
-		// proImage.style.alignItems = "center";
-		console.log(proImage);
-		document.body.appendChild(proImage);
 	}
 
 	export default {
@@ -195,6 +202,7 @@
 			return {
 				len: 13,
 				searchUser: "",
+				regnoSearch: "",
 				user: "",
 				button: "",
 				labelRegCNIC: "",
@@ -225,6 +233,7 @@
 				progVisible: true,
 				search: true,
 				image: image,
+				addImage: "",
 				srcList: [],
 				genders: [
 					{ value: "Male", option: "Male" },
@@ -257,12 +266,12 @@
 				this.setCNICandLen();
 				this.showRemove();
 				this.hide();
-				this.searchUser = "hostel";
+				this.searchUser = "hostelSupervisor";
 			} else if (this.button == "Update Hostel Warden") {
 				this.setCNICandLen();
 				this.showUpdate();
 				this.hide();
-				this.searchUser = "hostel";
+				this.searchUser = "hostelSupervisor";
 			} else if (this.button == "Add Mess Warden") {
 				this.showAdd();
 				this.hide();
@@ -270,12 +279,12 @@
 				this.setCNICandLen();
 				this.showRemove();
 				this.hide();
-				this.searchUser = "mess";
+				this.searchUser = "messSupervisor";
 			} else if (this.button == "Update Mess Warden") {
 				this.setCNICandLen();
 				this.showUpdate();
 				this.hide();
-				this.searchUser = "mess";
+				this.searchUser = "messSupervisor";
 			} else if (this.button == "Add Security Warden") {
 				this.showAdd();
 				this.hide();
@@ -283,12 +292,12 @@
 				this.setCNICandLen();
 				this.showRemove();
 				this.hide();
-				this.searchUser = "security";
+				this.searchUser = "securitySupervosor";
 			} else if (this.button == "Update Security Warden") {
 				this.setCNICandLen();
 				this.showUpdate();
 				this.hide();
-				this.searchUser = "security";
+				this.searchUser = "securitySupervosor";
 			}
 		},
 		methods: {
@@ -308,19 +317,26 @@
 				var file = element.target.files[0];
 				if (!file) return;
 
+				var output = document.getElementById("addImg");
+				output.src = URL.createObjectURL(file);
+				output.onload = function () {
+					URL.revokeObjectURL(output.src); // free memory
+				};
+
 				var reader = new FileReader();
 				reader.onloadend = function () {
 					var img = new Image();
 					console.log(img);
 					img.src = reader.result;
-
+					this.image = img.src;
+					// this.srcList.push(img.src);
 					img.onload = function () {
 						// create canvas element
 						var canvas = document.createElement("canvas");
 
 						// set canvas dimensions to resized image dimensions
-						var MAX_WIDTH = 800;
-						var MAX_HEIGHT = 600;
+						var MAX_WIDTH = 200;
+						var MAX_HEIGHT = 200;
 						var width = img.width;
 						var height = img.height;
 
@@ -346,12 +362,11 @@
 
 						// compress image as JPEG
 						var compressedImage = canvas.toDataURL("image/jpeg", 0.5); // set JPEG quality to 50%
-
-						// display compressed image
 						printIMG(compressedImage);
+						this.addImage = compressedImage;
 
 						// pass compressed image data to function
-						newFunction(compressedImage, "flex");
+						// newFunction(compressedImage);
 					};
 				};
 				reader.readAsDataURL(file);
@@ -393,10 +408,16 @@
 			async searchUsr() {
 				let id = this.regnoSearch;
 				if (this.button.includes("Student") && id.length < 11) {
-					alert("RegNo must be 11 digits");
+					ElMessageBox.alert("RegNo must be 11 digits", "Validate RegNo", {
+						autofocus: true,
+						confirmButtonText: "OK",
+					});
 					return;
 				} else if (id.length < 11) {
-					alert("CNIC must be 13 digits");
+					ElMessageBox.alert("CNIC must be 13 digits", "Validate CNIC", {
+						autofocus: true,
+						confirmButtonText: "OK",
+					});
 					return;
 				}
 				try {
@@ -404,13 +425,20 @@
 					console.log(response.data[0]);
 					this.setData(response.data[0]);
 				} catch (error) {
-					alert(error.message.toString());
+					ElMessageBox.alert(error.message.toString(), "Error", {
+						autofocus: true,
+						confirmButtonText: "OK",
+						type: "error",
+					});
 				}
 			},
 			setData(val) {
 				console.log(val);
 				if (val == undefined) {
-					alert("No record found");
+					ElMessageBox.alert("No record found", "Message", {
+						autofocus: true,
+						confirmButtonText: "OK",
+					});
 					return;
 				}
 				this.name = val.sname ? val.sname : val.name;
@@ -432,246 +460,141 @@
 				console.log("name ", name);
 				name = name.map((n) => {
 					console.log(n);
-					return n[0].toUpperCase() + n.substring(1);
+					return n[0].toUpperCase() + n.substring(1).toLowerCase();
 				});
 				console.log(name);
 				console.log(name.join(" "));
 				return name.join(" ");
 			},
 			async submit() {
+				function showError(error) {
+					ElMessageBox.alert(`${error} Field Missing`, "All fields are required", {
+						autofocus: true,
+						confirmButtonText: "OK",
+						type: "error",
+					});
+				}
+				if (this.button.includes("Student")) {
+					switch ("") {
+						case this.deptName:
+							showError("Department");
+							return;
+
+						case this.sems:
+							showError("Semester");
+							return;
+						case this.program:
+							showError("Program");
+							return;
+						case this.gender:
+							showError("Gender");
+							return;
+					}
+				}
+
 				let n = this.capatilize(this.name.replace(/\s+/g, " ").trim());
 				const payloadset = {
 					name: n,
-					rollno: this.regno.replace(/\s+/g, " ").trim(),
-					cnic: this.cnic.replace(/\s+/g, " ").trim(),
+					rollno: this.regno,
+					cnic: this.cnic,
 					gender: this.gender,
 					dept: this.deptName,
-					age: this.age.replace(/\s+/g, " ").trim(),
+					age: this.age,
 					semester: this.sems,
-					hostfee: this.hostfee.replace(/\s+/g, " ").trim(),
-					rollN: this.regnoSearch.replace(/\s+/g, " ").trim(),
+					hostfee: this.hostfee,
+					rollN: this.regnoSearch,
 					program: this.program,
 					img: image,
 				};
 				console.log(payloadset);
-				switch (this.button) {
-					case "Add Student":
-						{
-							let qr = getBase64EncodedRegNo(this.regno);
-							payloadset["qr"] = qr;
-							let node = document.getElementById("imgAdd");
-							if (node.parentNode) {
-								node.parentNode.removeChild(node);
+				const choice = async () => {
+					switch (this.button) {
+						case "Add Student":
+							{
+								let qr = getBase64EncodedRegNo(this.regno);
+								payloadset["qr"] = qr;
+								let node = document.getElementById("imgAdd");
+								if (node.parentNode) {
+									node.parentNode.removeChild(node);
+								}
+								const imageUrl = await apiCall("post", `${VUE_APP_URL}/students/saveStud`, payloadset);
+								const linkSource = `${imageUrl}`;
+								const downloadLink = document.createElement("a");
+								downloadLink.href = linkSource;
+								downloadLink.download = this.regno;
+								downloadLink.click();
 							}
-							const imageUrl = await apiCall("post", `${VUE_APP_URL}/students/saveStud`, payloadset);
-							const linkSource = `${imageUrl}`;
-							const downloadLink = document.createElement("a");
-							downloadLink.href = linkSource;
-							downloadLink.download = this.regno;
-							downloadLink.click();
-						}
-						break;
-					case "Remove Student":
-						{
-							const msg = await apiCall("delete", `${VUE_APP_URL}/students/removeStud/${this.regnoSearch}`);
-							showMessage(msg);
-						}
-						break;
-					case "Update Student":
-						{
-							const msg = await apiCall("patch", `${VUE_APP_URL}/students/updateStud`, payloadset);
-							showMessage(msg);
-						}
-						break;
-					case "Add Hostel Warden":
-						{
-							const msg = await apiCall("post", `${VUE_APP_URL}/hostelSupervisor/saveHW`, payloadset);
-							showMessage(msg);
-						}
-						break;
-					case "Remove Hostel Warden":
-						{
-							const msg = await apiCall("delete", `${VUE_APP_URL}/hostelSupervisor/removeHW/${this.regnoSearch}`);
-							showMessage(msg);
-						}
-						break;
-					case "Update Hostel Warden":
-						{
-							const msg = await apiCall("patch", `${VUE_APP_URL}/hostelSupervisor/updateHW`, payloadset);
-							showMessage(msg);
-						}
-						break;
-					case "Add Mess Warden":
-						{
-							const msg = await apiCall("post", `${VUE_APP_URL}/messSupervisor/saveMW`, payloadset);
-							showMessage(msg);
-						}
-						break;
-					case "Remove Mess Warden":
-						{
-							const msg = await apiCall("delete", `${VUE_APP_URL}/messSupervisor/removeMW/${this.regnoSearch}`);
-							showMessage(msg);
-						}
-						break;
-					case "Update Mess Warden":
-						{
-							const msg = await apiCall("patch", `${VUE_APP_URL}/messSupervisor/updateMW`, payloadset);
-							showMessage(msg);
-						}
-						break;
-					case "Add Security Warden":
-						{
-							const msg = await apiCall("post", `${VUE_APP_URL}/securitySupervisor/saveSW`, payloadset);
-							showMessage(msg);
-						}
-						break;
-					case "Remove Security Warden":
-						{
-							const msg = await apiCall("delete", `${VUE_APP_URL}/securitySupervisor/removeSW/${this.regnoSearch}`);
-							showMessage(msg);
-						}
-						break;
-					case "Update Security Warden":
-						{
-							const msg = await apiCall("patch", `${VUE_APP_URL}/securitySupervisor/updateSW`, payloadset);
-							showMessage(msg);
-						}
-						break;
-				}
-
-				// this.$router.go(-1);
+							break;
+						case "Remove Student":
+							{
+								const msg = await apiCall("delete", `${VUE_APP_URL}/students/removeStud/${this.regnoSearch}`);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Update Student":
+							{
+								const msg = await apiCall("patch", `${VUE_APP_URL}/students/updateStud`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Add Hostel Warden":
+							{
+								const msg = await apiCall("post", `${VUE_APP_URL}/hostelSupervisor/saveHW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Remove Hostel Warden":
+							{
+								const msg = await apiCall("delete", `${VUE_APP_URL}/hostelSupervisor/removeHW/${this.regnoSearch}`);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Update Hostel Warden":
+							{
+								const msg = await apiCall("patch", `${VUE_APP_URL}/hostelSupervisor/updateHW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Add Mess Warden":
+							{
+								const msg = await apiCall("post", `${VUE_APP_URL}/messSupervisor/saveMW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Remove Mess Warden":
+							{
+								const msg = await apiCall("delete", `${VUE_APP_URL}/messSupervisor/removeMW/${this.regnoSearch}`);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Update Mess Warden":
+							{
+								const msg = await apiCall("patch", `${VUE_APP_URL}/messSupervisor/updateMW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Add Security Warden":
+							{
+								const msg = await apiCall("post", `${VUE_APP_URL}/securitySupervosor/saveSW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Remove Security Warden":
+							{
+								const msg = await apiCall("delete", `${VUE_APP_URL}/securitySupervosor/removeSW/${this.regnoSearch}`);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Update Security Warden":
+							{
+								const msg = await apiCall("patch", `${VUE_APP_URL}/securitySupervosor/updateSW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+					}
+				};
+				choice(); //.then(() => this.$router.go(-1));
 			},
-			// async submit() {
-			//   let qr = getBase64EncodedRegNo(this.regno);
-
-			//   const payloadset = {
-			//     name: this.name,
-			//     rollno: this.regno,
-			//     cnic: this.cnic,
-			//     gender: this.gender,
-			//     dept: this.deptName,
-			//     age: this.age,
-			//     semester: this.sems,
-			//     hostfee: this.hostfee,
-			//     rollN: this.regnoSearch,
-			//     program: this.program,
-			//     img: image,
-			//     qr: qr,
-			//   };
-			//   console.log(payloadset);
-			//   // console.log("payload ", payloadset.img);
-			//   if (this.button == "Add Student") {
-			//     await axios
-			//       .post("http://localhost:3000/save", payloadset)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Remove Student") {
-			//     await axios
-			//       .delete(`http://localhost:3000/remove/${this.regnoSearch}`)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Update Student") {
-			//     await axios
-			//       .patch("http://localhost:3000/update", payloadset)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Add Hostel Warden") {
-			//     await axios
-			//       .post("http://localhost:3000/saveHW", payloadset)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Remove Hostel Warden") {
-			//     await axios
-			//       .delete(`http://localhost:3000/removeHW/${this.regnoSearch}`)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Update Hostel Warden") {
-			//     await axios
-			//       .patch("http://localhost:3000/updateHW", payloadset)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Add Mess Warden") {
-			//     await axios
-			//       .post("http://localhost:3000/saveMW", payloadset)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Remove Mess Warden") {
-			//     await axios
-			//       .delete(`http://localhost:3000/removeMW/${this.regnoSearch}`)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Update Mess Warden") {
-			//     await axios
-			//       .patch("http://localhost:3000/updateMW", payloadset)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Add Security Warden") {
-			//     await axios
-			//       .post("http://localhost:3000/saveSW", payloadset)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Remove Security Warden") {
-			//     await axios
-			//       .delete(`http://localhost:3000/removeSW/${this.regnoSearch}`)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   } else if (this.button == "Update Security Warden") {
-			//     await axios
-			//       .patch("http://localhost:3000/updateSW", payloadset)
-			//       .then((response) => {
-			//         alert(response.data);
-			//       })
-			//       .catch((error) => {
-			//         alert(error);
-			//       });
-			//   }
-			//   this.$router.go(-1);
-			//   // this.$router.push("/"+this.button);
-			// },
 		},
 	};
 </script>
@@ -681,7 +604,9 @@
 	.hello {
 		justify-content: center;
 		align-items: center;
-		width: 100% !important;
+		width: 60% !important;
+		margin: 0 auto !important;
+		user-select: none;
 	}
 
 	.row {
@@ -692,7 +617,7 @@
 		align-items: center;
 	}
 	.inputbox {
-		font-size: 1.3rem;
+		font-size: 1rem;
 	}
 	.label {
 		width: 25%;
@@ -701,7 +626,11 @@
 		font-weight: bold;
 		text-align: left;
 	}
-
+	searchLabel {
+		margin: 1rem;
+		font-weight: bold;
+		font-size: 1rem;
+	}
 	select {
 		width: 75%;
 		display: inline-block;
@@ -720,15 +649,16 @@
 	}
 
 	.buttons {
-		width: 100%;
-		background-color: #4caf50;
+		width: auto !important;
+		background-color: #2d10d0;
 		color: white;
 		padding: 14px 20px;
-		margin: 8px 0;
+		margin: 8px 10px;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
 		font-weight: bolder;
+		font-size: 1.5rem;
 	}
 
 	#search {
@@ -750,6 +680,20 @@
 		border-radius: 5px;
 		/* background-color: #f2f2f2; */
 		padding: 10px;
+		/* width: 100%;	 */
+	}
+	@media screen and (max-width: 880px) {
+		#formSection {
+			margin: 0.5rem 5px;
+			widows: 100%;
+		}
+
+		#intdiv {
+			border-radius: 5px;
+			/* background-color: #f2f2f2; */
+			padding: 10px;
+			width: 100%;
+		}
 	}
 
 	.demo-image__error .image-slot {

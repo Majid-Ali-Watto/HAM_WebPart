@@ -1,6 +1,7 @@
 /** @format */
 
 import { createWebHashHistory, createRouter } from "vue-router";
+// import all the routes components
 import HelloWorld from "../components/HelloWorld.vue";
 import MainMenu from "../components/MainMenu.vue";
 import GenericForm from "../components/GenericForm.vue";
@@ -10,8 +11,16 @@ import MessSec from "../components/Mess.vue";
 import SecuritySec from "../components/Security.vue";
 import ViewWardensData from "../components/ViewWardensData.vue";
 import ViewData from "../components/ViewData.vue";
+// define all the routes
 const routes = [
 	{ path: "/", component: HelloWorld },
+	{ path: "/Student", name: "Student", component: StudentSec },
+	{ path: "/Hostel", name: "Hostel", component: HostelSec },
+	{ path: "/Mess", name: "Mess", component: MessSec },
+	{ path: "/Security", name: "Security", component: SecuritySec },
+	{ path: "/ViewData", name: "ViewData", component: ViewData },
+	{ path: "/ViewWardensData", name: "ViewWardensData", component: ViewWardensData },
+	{ path: "/GenericForm", name: "GenericForm", component: GenericForm },
 	{
 		path: "/MainMenu",
 		component: MainMenu,
@@ -24,15 +33,9 @@ const routes = [
 			],
 		},
 	},
-	{ path: "/Student", name: "Student", component: StudentSec },
-	{ path: "/Hostel", name: "Hostel", component: HostelSec },
-	{ path: "/Mess", name: "Mess", component: MessSec },
-	{ path: "/Security", name: "Security", component: SecuritySec },
-	{ path: "/ViewData", name: "ViewData", component: ViewData },
-	{ path: "/ViewWardensData", name: "ViewWardensData", component: ViewWardensData },
-	{ path: "/GenericForm", name: "GenericForm", component: GenericForm },
+	
 ];
-
+// create all the routes
 const router = createRouter({
 	history: createWebHashHistory(),
 	routes, // short for `routes: routes`

@@ -2,77 +2,55 @@
 	<div class="hello">
 		<fieldset>
 			<legend style="font-weight: bold; font-size: 1.5rem; background: rgba(255, 255, 255, 0.25); padding: 1rem">Admin credientials</legend>
-			<form
+			<el-form
 				@submit.prevent="disp"
-				style="display: flex; flex-direction: column; align-items: stretch; padding: 1rem">
-				<input
+				style="padding: 1rem;display: flex;flex-direction: column;">
+				<div style="display: flex;align-items: center;">
+				<label for="username">Username</label>
+				<el-input
 					type="text"
 					v-model="username"
-					maxlength="15"
-					minlength="5"
-					placeholder="Enter Username"
+					:maxlength="15"
+					:minlength="5"
 					class="input"
-					required />
-				<div style="flex-direction: row">
-					<input
-						type="password"
-						v-model="password"
-						maxlength="15"
-						minlength="5"
-						placeholder="Enter Password"
-						class="input"
-						required
-						v-if="!show" />
-					<input
-						type="text"
-						v-model="password"
-						maxlength="15"
-						minlength="5"
-						placeholder="Enter Password"
-						class="input"
-						required
-						v-else />
-					<button
-						type="button"
-						class="showHide"
-						@click="setShow()"
-						v-if="!show">
-						Show
-					</button>
-					<button
-						type="button"
-						class="showHide"
-						@click="setShow()"
-						v-else>
-						Hide
-					</button>
+					required
+					input-style="padding:14px 20px;margin: 8px 0;width:100%;" />
+					
 				</div>
-				<div>
-					<button
-						type="submit"
-						id="button">
-						Login
-					</button>
+				<div style="display: flex;align-items: center;">
+					<label for="password">Password</label>
+				<el-input
+					type="password"
+					v-model="password"
+					:maxlength="15"
+					:minlength="5"
+					class="input"
+					required
+					input-style="padding:14px 20px;margin: 8px 0;width:100%;"
+					show-password />
 				</div>
-			</form>
+				<button
+					type="submit"
+					id="button">
+					Login
+				</button>
+			</el-form>
 		</fieldset>
 	</div>
 </template>
 
 <script>
 	// import axios from "axios";
-	import { ref } from "vue";
+	// import { ElMessageBox } from "element-plus";
 	export default {
 		name: "HelloWorld",
 		props: {
 			msg: String,
 		},
-		setup() {
-			let show = ref(false);
-
-			// expose to template and other options API hooks
+		data() {
 			return {
-				show,
+				username: "",
+				password: "",
 			};
 		},
 		methods: {
@@ -86,17 +64,25 @@
 				//     ) {
 				this.$store.dispatch("setUser", "Admin");
 				this.$router.push("/MainMenu");
-				//   } else alert("invalid credientials");
+				//   } else {
+				// ElMessageBox.alert("Invalid Credientials", "Error", {
+				// 		autofocus: true,
+				// 		confirmButtonText: "OK",
+				// 	});
+				// }
 				// })
 				// .catch((error) => {
-				//   alert(error.message);
+				// ElMessageBox.alert(error.message, "Error", {
+				// 		autofocus: true,
+				// 		confirmButtonText: "OK",
+				// 	});
 				// });
 			},
-			setShow() {
-				console.log("show");
-				this.show = !this.show;
-				console.log(this.show);
-			},
+			// setShow() {
+			// 	console.log("show");
+			// 	this.show = !this.show;
+			// 	console.log(this.show);
+			// },
 		},
 	};
 </script>
@@ -111,22 +97,12 @@
 		box-sizing: border-box;
 		padding: 0%;
 		display: flex;
+		margin: 0 auto !important;
+	}
+	label {
+		font-size: x-large;
 	}
 
-	input[type="text"],
-	input[type="password"] {
-		width: 20rem;
-		padding: 12px 20px;
-		margin: 8px 0;
-		display: inline-block;
-		border: 1px solid #ccc;
-		box-sizing: border-box;
-		background-color: white;
-	}
-	input:focus {
-		border-color: lawngreen;
-		outline-color: lightgreen;
-	}
 	#button {
 		background-color: #00b4d8;
 		color: white;
@@ -136,13 +112,13 @@
 		margin: 8px 0;
 		border: none;
 		cursor: pointer;
-		width: 100%;
+		width: 94%;
 	}
-	.showHide {
+	/* .showHide {
 		margin: 1rem;
 		padding: 14px 20px;
 		border: none;
-	}
+	} */
 	button:hover {
 		opacity: 0.8;
 	}

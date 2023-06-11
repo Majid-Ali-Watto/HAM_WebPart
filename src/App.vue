@@ -13,6 +13,7 @@
 </template>
 
 <script>
+
 	export default {
 		name: "App",
 	};
@@ -20,7 +21,7 @@
 
 <style>
 	#app {
-		font-family: Avenir, Helvetica, Arial, sans-serif;
+		font-family:'Poppins', sans-serif;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		text-align: center;
@@ -28,6 +29,7 @@
 	}
 	#headerText {
 		text-transform: uppercase;
+		user-select: none;
 	}
 	#homeContainer {
 		width: 100%;
@@ -44,7 +46,7 @@
 	}
 	#loginContainer {
 		justify-content: center;
-		margin: 1rem;
+		/* margin: 1rem; */
 		width: 100%;
 		height: 100%;
 	}
@@ -54,6 +56,8 @@
 		height: 6rem;
 		margin-left: 5rem;
 		margin-right: 3rem;
+		user-select: none;
+		-webkit-user-drag: none;
 	}
 	@media screen and (max-width: 1110px) {
 		#homeContainer {
@@ -70,11 +74,14 @@
 		}
 		#loginContainer {
 			justify-content: center;
-			margin: 1rem;
+			/* margin: 1rem; */
 		}
 		#imgStyle {
-			width: 15rem;
-			height: 15rem;
+			width: 5rem;
+			height: 5rem;
+			user-select: none;
+			-webkit-user-drag: none;
+
 		}
 	}
 	@media screen and (max-width: 490px) {
@@ -88,6 +95,10 @@
 		#imgStyle {
 			width: 10rem;
 			height: 10rem;
+			user-select: none;
+			-webkit-user-drag: none;
+
+
 		}
 	}
 </style>

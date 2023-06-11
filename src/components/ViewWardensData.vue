@@ -2,38 +2,50 @@
 
 <template>
 	<div class="hello">
-		<fieldset>
-			<div style="display: flex; justify-content: space-around">
-				<label class="input">CNIC</label>
-				<input
+		<div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; width: 100%">
+			<div
+				id="searchSection"
+				style="display: flex; justify-content: center; align-items: center; width: 100%">
+				<label class="label">CNIC</label>
+				<el-input
 					type="text"
 					v-model="regno"
-					maxlength="13"
-					minlength="13"
+					:maxlength="13"
+					:minlength="13"
 					class="input"
 					required
-					onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
-				/>
-				<button class="input" @click="getUserData()">Search</button>
+					style="width: 30%"
+					onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
+				<el-button
+					type="primary"
+					@click="getUserData()"
+					>Search</el-button
+				>
 			</div>
-		</fieldset>
-		<div v-if="showData" style="overflow-x: auto">
+		</div>
+		<div
+			v-if="showData"
+			style="overflow-x: auto">
 			<legend style="font-weight: bold">Details</legend>
 
 			<table>
 				<tr>
-					<th style="background-color: green; color: black" scope="col" v-for="column in columnNames" v-bind:key="column.value">
+					<th
+						style="background-color: green; color: black"
+						scope="col"
+						v-for="column in columnNames"
+						v-bind:key="column.value">
 						{{ column.toUpperCase() }}
 					</th>
 				</tr>
 
-				<tr v-for="row in allData" v-bind:key="row.cnic">
-					<td v-for="column in columnNames" v-bind:key="column">
+				<tr
+					v-for="row in allData"
+					v-bind:key="row.cnic">
+					<td
+						v-for="column in columnNames"
+						v-bind:key="column">
 						<div v-if="column == 'image'">
-							<!-- <img
-                  v-bind:src="row[column]"
-                  style="width: 50px; height: 50px"
-                /> -->
 							<el-image
 								:src="row[column]"
 								lazy
@@ -41,8 +53,7 @@
 								:zoom-rate="1.2"
 								:preview-src-list="[row[column]]"
 								:initial-index="4"
-								fit="cover"
-							/>
+								fit="cover" />
 						</div>
 						<div v-else>
 							{{ row[column] }}
@@ -51,24 +62,33 @@
 				</tr>
 			</table>
 
-			<!-- <button @click="showData = false">Close</button> -->
-			<el-button type="primary" class="input" @click="showData = false">Close</el-button>
+			<el-button
+				type="primary"
+				class="input"
+				@click="showData = false"
+				>Close</el-button
+			>
 		</div>
 	</div>
-	<!-- <div style="overflow-x: auto"> -->
 	<div id="tables">
 		<table class="table">
 			<tr>
-				<th style="background-color: cyan; color: black" scope="col" v-for="column in columnNames" v-bind:key="column.value">
+				<th
+					style="background-color: cyan; color: black"
+					scope="col"
+					v-for="column in columnNames"
+					v-bind:key="column.value">
 					{{ column.toUpperCase() }}
 				</th>
 			</tr>
 
-			<tr v-for="row in info" v-bind:key="row.rollno">
-				<td v-for="column in columnNames" v-bind:key="column">
+			<tr
+				v-for="row in info"
+				v-bind:key="row.rollno">
+				<td
+					v-for="column in columnNames"
+					v-bind:key="column">
 					<div v-if="column == 'image'">
-						<!-- <img v-bind:src="row[column]" style="width: 50px; height: 50px" />
-               -->
 						<el-image
 							:src="row[column]"
 							lazy
@@ -76,8 +96,7 @@
 							:zoom-rate="1.2"
 							:preview-src-list="[row[column]]"
 							:initial-index="4"
-							fit="cover"
-						/>
+							fit="cover" />
 					</div>
 					<div v-else>
 						{{ row[column] }}
@@ -89,6 +108,7 @@
 </template>
 
 <script>
+	import { ElMessageBox } from "element-plus";
 	import axios from "axios";
 	import VUE_APP_URL from "@/assets/url";
 	export default {
@@ -130,7 +150,10 @@
 						this.info = response.data;
 					})
 					.catch((error) => {
-						alert(error.message);
+						ElMessageBox.alert(error.message, "Error", {
+							autofocus: true,
+							confirmButtonText: "OK",
+						});
 					});
 			},
 
@@ -138,17 +161,18 @@
 				let u = "";
 				let user = this.$store.getters.getUser;
 				u = this.getUserEndpoint(user);
-
 				this.showData = true;
 				let id = this.regno;
-				//let sdata=''
 				await axios
 					.get(`${VUE_APP_URL}/${u}/${id}`)
 					.then((response) => {
 						this.allData = response.data;
 					})
 					.catch((error) => {
-						alert(error.message);
+						ElMessageBox.alert(error.message, "Error", {
+							autofocus: true,
+							confirmButtonText: "OK",
+						});
 					});
 			},
 		},
@@ -160,36 +184,73 @@
 	.hello {
 		justify-content: center;
 		align-items: center;
+		margin: 0 auto !important;
 	}
 	.input {
-		margin: 1rem;
+		margin: 0.5rem;
 		padding: 0.5rem;
 		font-weight: bold;
+	}
+	.label {
+		margin: 1rem;
+		font-weight: bold;
+		font-size: 1rem;
 	}
 	textarea {
 		width: 20rem;
 		height: 15rem;
 		font-weight: bold;
 	}
-	table {
-		/* border-collapse: collapse; */
-		border-spacing: 0;
+	#tables {
+		overflow-x: auto;
 		width: 100%;
-		border: 1px solid rgb(28, 27, 27);
-		background-color: "white";
+		height: 450px;
+		margin: 0% auto !important;
+	}
+	table {
+		border-collapse: collapse;
+		background-color: white;
+		margin: 0% auto !important;
 	}
 
 	th,
 	td {
+		padding: 1.5rem 2.5rem;
 		text-align: left;
-		padding: 8px;
-		border: 1px solid rgb(157, 153, 153);
+		border-bottom: 1px solid #ddd;
+		width: fit-content;
 	}
 
-	tr:nth-child(odd) {
-		background-color: rgb(246, 236, 236);
+	tr:hover {
+		background-color: #d6eeee;
 	}
-	tr:nth-child(even) {
-		background-color: #f2f2f2;
+	@media screen and (max-width: 1220px) {
+		#tables {
+			overflow-x: auto;
+		}
+		.table {
+			overflow-x: auto;
+			table-layout: fixed;
+		}
+	}
+	@media screen and (max-width: 1100px) {
+		.input {
+			width: 40%;
+		}
+	}
+
+	@media screen and (max-width: 400px) {
+		#searchSection {
+			flex-wrap: wrap;
+		}
+		.input {
+			margin: 5px;
+			width: 50%;
+		}
+		.label {
+			margin: 5px;
+			font-weight: bold;
+			font-size: 1rem;
+		}
 	}
 </style>

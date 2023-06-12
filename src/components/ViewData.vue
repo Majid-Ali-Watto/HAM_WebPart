@@ -59,10 +59,10 @@
 		</div>
 
 		<div id="tables" @copy.prevent>
-			<table class="table">
-				<tr>
+			<table class="table" v-if="info.length > 0">
+				<tr v-if="columnNames">
 					<th style="background-color: cyan; color: black" scope="col" v-for="column in columnNames" v-bind:key="column.value">
-						{{ column.toUpperCase() }}
+						{{ column == "status" ? "Fee Status".toUpperCase() : column.toUpperCase() }}
 					</th>
 				</tr>
 
@@ -80,11 +80,17 @@
 							/>
 						</div>
 						<div v-else>
-							{{ row[column] }}
+							<div v-if="column == 'status'">
+								{{ row[column] == false ? "Pending" : "Paid" }}
+							</div>
+							<div v-else>
+								{{ row[column] }}
+							</div>
 						</div>
 					</td>
 				</tr>
 			</table>
+			<h1 v-else>No Records here</h1>
 		</div>
 	</div>
 </template>
@@ -96,14 +102,17 @@
 	export default {
 		name: "ViewData",
 		mounted() {
+			if (this.$store.getters.getLoginKey != "loggedIn") this.$router.push("/");
+
 			this.getData();
 		},
 		computed: {
 			columnNames: function () {
 				const names = new Set();
 				for (const row of this.info) {
-					for (const key of Object.keys(row)) {
-						if (key == "did") continue;
+					for (let key of Object.keys(row)) {
+						if (key == "did" || key == "imgId") continue;
+
 						names.add(key);
 					}
 				}
@@ -133,7 +142,8 @@
 				await axios
 					.get(`${VUE_APP_URL}/students`)
 					.then((response) => {
-						this.info = response.data;
+						console.log(response.data);
+						if (typeof response.data != "string") this.info = response.data;
 					})
 					.catch((error) => {
 						ElMessageBox.alert(error.message, "Error", {
@@ -147,8 +157,8 @@
 				if (this.showData == true) return;
 				let id = this.regno;
 				let idCopy = id;
-				id = Number(id);
-				if (isNaN(id) || idCopy.toString().length < 11) {
+				// id = Number(id);
+				if (!Number(id) || idCopy.toString().length < 11) {
 					ElMessageBox.alert("Please enter valid registration number", "Validate RegNo", {
 						autofocus: true,
 						confirmButtonText: "OK",

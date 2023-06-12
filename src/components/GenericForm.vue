@@ -243,6 +243,7 @@
 			};
 		},
 		mounted() {
+			if (this.$store.getters.getLoginKey != "loggedIn") this.$router.push("/");
 			this.user = this.$store.getters.getUser;
 			console.log(this.user);
 			this.depts = depts;
@@ -316,12 +317,13 @@
 			encodeImageFileAsURL(element) {
 				var file = element.target.files[0];
 				if (!file) return;
-
-				var output = document.getElementById("addImg");
-				output.src = URL.createObjectURL(file);
-				output.onload = function () {
-					URL.revokeObjectURL(output.src); // free memory
-				};
+				if (this.addVisible) {
+					var output = document.getElementById("addImg");
+					output.src = URL.createObjectURL(file);
+					output.onload = function () {
+						URL.revokeObjectURL(output.src); // free memory
+					};
+				}
 
 				var reader = new FileReader();
 				reader.onloadend = function () {
@@ -361,7 +363,7 @@
 						ctx.drawImage(img, 0, 0, width, height);
 
 						// compress image as JPEG
-						var compressedImage = canvas.toDataURL("image/jpeg", 0.5); // set JPEG quality to 50%
+						var compressedImage = canvas.toDataURL("image/jpeg", 0.75); // set JPEG quality to 50%
 						printIMG(compressedImage);
 						this.addImage = compressedImage;
 
@@ -513,10 +515,10 @@
 							{
 								let qr = getBase64EncodedRegNo(this.regno);
 								payloadset["qr"] = qr;
-								let node = document.getElementById("imgAdd");
-								if (node.parentNode) {
-									node.parentNode.removeChild(node);
-								}
+								// let node = document.getElementById("imgAdd");
+								// if (node.parentNode) {
+								// 	node.parentNode.removeChild(node);
+								// }
 								const imageUrl = await apiCall("post", `${VUE_APP_URL}/students/saveStud`, payloadset);
 								const linkSource = `${imageUrl}`;
 								const downloadLink = document.createElement("a");

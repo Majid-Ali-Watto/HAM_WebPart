@@ -5,7 +5,6 @@
 		<div id="card" v-for="l in list" :key="l" @click="moveTo(l.name, l.option)">
 			<img :src="l.img" alt="Image" id="img" />
 			<button id="button">{{ l.option }}</button>
-			
 		</div>
 	</div>
 </template>
@@ -14,7 +13,9 @@
 	export default {
 		name: "MainMenu",
 		props: ["list"],
-
+		mounted() {
+			if (this.$store.getters.getLoginKey != "loggedIn") this.$router.push("/");
+		},
 		methods: {
 			moveTo(url, user) {
 				this.$store.dispatch("setUser", user);
@@ -56,7 +57,7 @@
 		text-transform: uppercase;
 		cursor: pointer;
 		user-select: none;
-		margin-top:auto
+		margin-top: auto;
 	}
 	#card {
 		padding: 80px 0px 0px 0px;
@@ -75,15 +76,14 @@
 		margin: 1rem;
 		box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 		cursor: pointer;
-		gap:20px
+		gap: 20px;
 	}
 	#img {
-		width: 80px;
+		width: 100px;
 		/* height: 25rem; */
 		background-repeat: no-repeat;
 		padding: 5px;
 		user-select: none;
 		-webkit-user-drag: none;
-
 	}
 </style>

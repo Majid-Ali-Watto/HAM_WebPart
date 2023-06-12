@@ -3,9 +3,7 @@
 <template>
 	<div class="hello">
 		<div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; width: 100%">
-			<div
-				id="searchSection"
-				style="display: flex; justify-content: center; align-items: center; width: 100%">
+			<div id="searchSection" style="display: flex; justify-content: center; align-items: center; width: 100%">
 				<label class="label">CNIC</label>
 				<el-input
 					type="text"
@@ -15,36 +13,23 @@
 					class="input"
 					required
 					style="width: 30%"
-					onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
-				<el-button
-					type="primary"
-					@click="getUserData()"
-					>Search</el-button
-				>
+					onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
+				/>
+				<el-button type="primary" @click="getUserData()">Search</el-button>
 			</div>
 		</div>
-		<div
-			v-if="showData"
-			style="overflow-x: auto">
+		<div v-if="showData" style="overflow-x: auto">
 			<legend style="font-weight: bold">Details</legend>
 
 			<table>
 				<tr>
-					<th
-						style="background-color: green; color: black"
-						scope="col"
-						v-for="column in columnNames"
-						v-bind:key="column.value">
+					<th style="background-color: green; color: black" scope="col" v-for="column in columnNames" v-bind:key="column.value">
 						{{ column.toUpperCase() }}
 					</th>
 				</tr>
 
-				<tr
-					v-for="row in allData"
-					v-bind:key="row.cnic">
-					<td
-						v-for="column in columnNames"
-						v-bind:key="column">
+				<tr v-for="row in allData" v-bind:key="row.cnic">
+					<td v-for="column in columnNames" v-bind:key="column">
 						<div v-if="column == 'image'">
 							<el-image
 								:src="row[column]"
@@ -53,7 +38,8 @@
 								:zoom-rate="1.2"
 								:preview-src-list="[row[column]]"
 								:initial-index="4"
-								fit="cover" />
+								fit="cover"
+							/>
 						</div>
 						<div v-else>
 							{{ row[column] }}
@@ -62,32 +48,19 @@
 				</tr>
 			</table>
 
-			<el-button
-				type="primary"
-				class="input"
-				@click="showData = false"
-				>Close</el-button
-			>
+			<el-button type="primary" class="input" @click="showData = false">Close</el-button>
 		</div>
 	</div>
 	<div id="tables">
 		<table class="table">
 			<tr>
-				<th
-					style="background-color: cyan; color: black"
-					scope="col"
-					v-for="column in columnNames"
-					v-bind:key="column.value">
+				<th style="background-color: cyan; color: black" scope="col" v-for="column in columnNames" v-bind:key="column.value">
 					{{ column.toUpperCase() }}
 				</th>
 			</tr>
 
-			<tr
-				v-for="row in info"
-				v-bind:key="row.rollno">
-				<td
-					v-for="column in columnNames"
-					v-bind:key="column">
+			<tr v-for="row in info" v-bind:key="row.rollno">
+				<td v-for="column in columnNames" v-bind:key="column">
 					<div v-if="column == 'image'">
 						<el-image
 							:src="row[column]"
@@ -96,7 +69,8 @@
 							:zoom-rate="1.2"
 							:preview-src-list="[row[column]]"
 							:initial-index="4"
-							fit="cover" />
+							fit="cover"
+						/>
 					</div>
 					<div v-else>
 						{{ row[column] }}
@@ -114,6 +88,8 @@
 	export default {
 		name: "ViewWardensData",
 		mounted() {
+			if (this.$store.getters.getLoginKey != "loggedIn") this.$router.push("/");
+
 			this.getData(this.$store.getters.getUser);
 		},
 		computed: {
@@ -121,6 +97,7 @@
 				const names = new Set();
 				for (const row of this.info) {
 					for (const key of Object.keys(row)) {
+						if (key == "imgId") continue;
 						names.add(key);
 					}
 				}
@@ -158,15 +135,34 @@
 			},
 
 			async getUserData() {
+				if (this.showData == true) return;
+				let cnic = this.regno;
+				let idCopy = cnic;
+				cnic = Number(cnic);
+				if (isNaN(cnic) || idCopy.toString().length < 13) {
+					ElMessageBox.alert("Please enter valid cnic number", "Validate CNIC", {
+						autofocus: true,
+						confirmButtonText: "OK",
+					});
+					return;
+				}
 				let u = "";
 				let user = this.$store.getters.getUser;
 				u = this.getUserEndpoint(user);
-				this.showData = true;
+				// this.showData = true;
 				let id = this.regno;
 				await axios
 					.get(`${VUE_APP_URL}/${u}/${id}`)
 					.then((response) => {
-						this.allData = response.data;
+						if (response.data.length > 0) {
+							this.showData = true;
+							this.allData = response.data;
+						} else {
+							ElMessageBox.alert("No Record Found", "Message", {
+								autofocus: true,
+								confirmButtonText: "OK",
+							});
+						}
 					})
 					.catch((error) => {
 						ElMessageBox.alert(error.message, "Error", {

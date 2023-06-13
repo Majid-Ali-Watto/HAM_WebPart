@@ -9,6 +9,9 @@
 	export default {
 		name: "MessSec",
 		components: { MainMenu },
+		mounted() {
+			if (this.$store.getters.getLoginKey != "loggedIn") this.$router.push("/");
+		},
 		data() {
 			return {
 				list: [

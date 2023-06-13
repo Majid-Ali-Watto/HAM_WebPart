@@ -7,6 +7,7 @@
 		<div v-if="search" id="searchSection" style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
 			<label for="regno" class="searchLabel">{{ labelRegCNIC }}</label>
 			<el-input
+				show-word-limit
 				type="text"
 				v-model="regnoSearch"
 				:maxlength="len"
@@ -23,14 +24,17 @@
 			<div id="intdiv">
 				<form
 					@submit.prevent="submit"
-					style="padding: 0%; margin: 0%; box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5); transform: translateY(5px)"
+					style="padding: 3%; margin: 0%; box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5); transform: translateY(5px)"
 				>
 					<div class="row" v-if="nameVisible">
 						<label for="name" class="label">Name</label>
 						<el-input
+							show-word-limit
+							:disabled="isDisabled"
 							type="text"
 							id="name"
-							:maxlength="255"
+							placeholder="Quaid-I-Azam, Majid Ali, Mr. Ali"
+							:maxlength="100"
 							:minlength="3"
 							class="inputbox"
 							name="name"
@@ -43,8 +47,11 @@
 					<div class="row" v-if="regnoVisible">
 						<label for="regno" class="label">Reg No</label>
 						<el-input
+							show-word-limit
+							:disabled="isDisabled"
 							type="text"
 							id="regno"
+							placeholder="04071813051"
 							:maxlength="11"
 							:minlength="11"
 							class="inputbox"
@@ -57,7 +64,9 @@
 					<div class="row" v-if="cnicVisible">
 						<label for="cnic" class="label">CNIC</label>
 						<el-input
-							placeholder="Without Dashes(-) or Spacing"
+							show-word-limit
+							:disabled="isDisabled"
+							placeholder="Without Dashes(-) or Spacing like 1111111111111"
 							type="text"
 							id="cnic"
 							:maxlength="13"
@@ -71,20 +80,46 @@
 					</div>
 					<div class="row" v-if="deptVisible">
 						<label for="dept" class="label">Department</label>
-						<el-select v-model="deptName" filterable effect="dark" placeholder="Select" style="width: 100%" size="large">
+						<el-select
+							:disabled="isDisabled"
+							v-model="deptName"
+							filterable
+							effect="dark"
+							placeholder="Select"
+							style="width: 100%"
+							size="large"
+						>
 							<el-option required v-for="item in depts" :key="item.value" :label="item.label" :value="item.value" />
 						</el-select>
 					</div>
 					<div class="row" v-if="semsVisible">
 						<label for="semester" class="label">Semester</label>
-						<el-select required v-model="sems" filterable effect="dark" placeholder="Select" style="width: 100%" size="large">
+						<el-select
+							:disabled="isDisabled"
+							required
+							v-model="sems"
+							filterable
+							effect="dark"
+							placeholder="Select"
+							style="width: 100%"
+							size="large"
+						>
 							<el-option required v-for="item in semesters" :key="item.value" :label="item.label" :value="item.value" />
 						</el-select>
 					</div>
 
 					<div class="row" v-if="progVisible">
 						<label for="program" class="label">Program</label>
-						<el-select required v-model="program" filterable effect="dark" placeholder="Select" style="width: 100%" size="large">
+						<el-select
+							:disabled="isDisabled"
+							required
+							v-model="program"
+							filterable
+							effect="dark"
+							placeholder="Select"
+							style="width: 100%"
+							size="large"
+						>
 							<el-option required v-for="(item, index) in programs" :key="index" :label="item.label" :value="item.value" />
 						</el-select>
 					</div>
@@ -92,8 +127,11 @@
 					<div class="row" v-if="ageVisible">
 						<label for="age" class="label">Age</label>
 						<el-input
+							show-word-limit
+							:disabled="isDisabled"
 							type="number"
 							id="age"
+							placeholder="Between 18-60"
 							:maxlength="2"
 							:minlength="2"
 							:min="18"
@@ -107,7 +145,16 @@
 					</div>
 					<div class="row" v-if="genderVisible">
 						<label for="gender" class="label">Gender</label>
-						<el-select required v-model="gender" filterable effect="dark" placeholder="Select" style="width: 100%" size="large">
+						<el-select
+							:disabled="isDisabled"
+							required
+							v-model="gender"
+							filterable
+							effect="dark"
+							placeholder="Select"
+							style="width: 100%"
+							size="large"
+						>
 							<el-option required v-for="item in genders" :key="item.value" :label="item.label" :value="item.value" />
 						</el-select>
 					</div>
@@ -115,9 +162,12 @@
 					<div class="row" v-if="hfeeVisible">
 						<label for="hostfee" class="label">Hostel Fee </label>
 						<el-input
+							show-word-limit
+							:disabled="isDisabled"
 							type="number"
 							id="hostfee"
 							:min="0"
+							placeholder="between 0-1000000"
 							:max="1000000"
 							class="inputbox"
 							name="hostfee"
@@ -127,16 +177,18 @@
 						/>
 					</div>
 					<!-- <br /> -->
-					<div class="row" v-if="addVisible || updatevisible">
+					<div class="row" v-if="addVisible">
 						<label for="image" class="label">Upload Image</label>
-
 						<input type="file" accept="image/*" @change="encodeImageFileAsURL($event)" required />
+					</div>
+					<div class="row" v-if="updatevisible">
+						<label for="image" class="label">Upload Image</label>
+						<input type="file" accept="image/*" @change="encodeImageFileAsURL($event)" />
 					</div>
 					<div class="row" v-if="removeVisible || updatevisible" style="display: flex; justify-content: center">
 						<div class="demo-image__preview">
 							<el-image
 								:src="image"
-								lazy
 								style="width: 100px; height: 100px"
 								:zoom-rate="1.2"
 								:preview-src-list="srcList"
@@ -151,9 +203,9 @@
 						</div>
 					</div>
 
-					<button type="submit" class="buttons" v-if="addVisible">ADD</button>
-					<button type="submit" class="buttons" v-if="removeVisible">REMOVE</button>
-					<button type="submit" class="buttons" v-if="updatevisible">UPDATE</button>
+					<el-button native-type="submit" class="buttons" v-if="addVisible">ADD</el-button>
+					<el-button native-type="submit" class="buttons" :disabled="isRemoveDisabled" v-if="removeVisible">REMOVE</el-button>
+					<el-button native-type="submit" class="buttons" :disabled="isDisabled" v-if="updatevisible">UPDATE</el-button>
 				</form>
 			</div>
 		</div>
@@ -200,6 +252,8 @@
 
 		data() {
 			return {
+				prevCNIC: "",
+				prevRegNo: "",
 				len: 13,
 				searchUser: "",
 				regnoSearch: "",
@@ -232,6 +286,8 @@
 				genderVisible: true,
 				progVisible: true,
 				search: true,
+				isDisabled: false,
+				isRemoveDisabled: false,
 				image: image,
 				addImage: "",
 				srcList: [],
@@ -250,15 +306,20 @@
 			this.semesters = semesters;
 			this.programs = programs;
 			this.button = this.user; //this.user.split(" ")[0];
+
 			if (this.button == "Add Student") {
 				this.showAdd();
 			} else if (this.button == "Remove Student") {
 				this.setRegandLen();
 				this.showRemove();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
 				this.searchUser = "students";
 			} else if (this.button == "Update Student") {
 				this.setRegandLen();
 				this.showUpdate();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
 				this.searchUser = "students";
 			} else if (this.button == "Add Hostel Warden") {
 				this.showAdd();
@@ -267,11 +328,15 @@
 				this.setCNICandLen();
 				this.showRemove();
 				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
 				this.searchUser = "hostelSupervisor";
 			} else if (this.button == "Update Hostel Warden") {
 				this.setCNICandLen();
 				this.showUpdate();
 				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
 				this.searchUser = "hostelSupervisor";
 			} else if (this.button == "Add Mess Warden") {
 				this.showAdd();
@@ -280,11 +345,15 @@
 				this.setCNICandLen();
 				this.showRemove();
 				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
 				this.searchUser = "messSupervisor";
 			} else if (this.button == "Update Mess Warden") {
 				this.setCNICandLen();
 				this.showUpdate();
 				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
 				this.searchUser = "messSupervisor";
 			} else if (this.button == "Add Security Warden") {
 				this.showAdd();
@@ -293,11 +362,15 @@
 				this.setCNICandLen();
 				this.showRemove();
 				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
 				this.searchUser = "securitySupervosor";
 			} else if (this.button == "Update Security Warden") {
 				this.setCNICandLen();
 				this.showUpdate();
 				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
 				this.searchUser = "securitySupervosor";
 			}
 		},
@@ -445,7 +518,9 @@
 				}
 				this.name = val.sname ? val.sname : val.name;
 				this.regno = val.rollno;
+				this.prevRegNo = val.rollno;
 				this.cnic = val.cnic;
+				this.prevCNIC = val.cnic;
 				this.gender = val.gender;
 				this.deptName = val.dname;
 				this.age = val.age;
@@ -454,6 +529,10 @@
 				this.program = val.program;
 				this.image = val.image;
 				this.srcList.push(val.image);
+				if (!this.removeVisible) this.isDisabled = false;
+				else this.isRemoveDisabled = false;
+
+				console.log("previous ", this.prevCNIC, this.prevRegNo);
 			},
 			capatilize(str) {
 				console.log("str ", str);
@@ -507,6 +586,8 @@
 					rollN: this.regnoSearch,
 					program: this.program,
 					img: image,
+					prevCNIC: this.prevCNIC,
+					prevRegNo: this.prevRegNo,
 				};
 				console.log(payloadset);
 				const choice = async () => {
@@ -520,16 +601,19 @@
 								// 	node.parentNode.removeChild(node);
 								// }
 								const imageUrl = await apiCall("post", `${VUE_APP_URL}/students/saveStud`, payloadset);
-								const linkSource = `${imageUrl}`;
-								const downloadLink = document.createElement("a");
-								downloadLink.href = linkSource;
-								downloadLink.download = this.regno;
-								downloadLink.click();
+								if (imageUrl.includes("data:image/")) {
+									const linkSource = `${imageUrl}`;
+									const downloadLink = document.createElement("a");
+									downloadLink.href = linkSource;
+									downloadLink.download = this.regno;
+									downloadLink.click();
+									this.$router.go(-1);
+								} else showMessage(imageUrl, this.$router);
 							}
 							break;
 						case "Remove Student":
 							{
-								const msg = await apiCall("delete", `${VUE_APP_URL}/students/removeStud/${this.regnoSearch}`);
+								const msg = await apiCall("delete", `${VUE_APP_URL}/students/removeStud/${this.regnoSearch + "," + this.cnic}`);
 								showMessage(msg, this.$router);
 							}
 							break;
@@ -619,8 +703,9 @@
 		align-items: center;
 	}
 	.inputbox {
-		font-size: 1rem;
+		font-size: 0.8rem;
 	}
+
 	.label {
 		width: 25%;
 		margin-left: 0px;
@@ -651,11 +736,11 @@
 	}
 
 	.buttons {
-		width: auto !important;
+		width: 100% !important;
 		background-color: #2d10d0;
 		color: white;
-		padding: 14px 20px;
-		margin: 8px 10px;
+		padding: 20px 20px;
+		/* margin: 8px 10px; */
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;

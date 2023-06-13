@@ -52,7 +52,7 @@
 		</div>
 	</div>
 	<div id="tables">
-		<table class="table">
+		<table class="table" v-if="info.length > 0">
 			<tr>
 				<th style="background-color: cyan; color: black" scope="col" v-for="column in columnNames" v-bind:key="column.value">
 					{{ column.toUpperCase() }}
@@ -78,6 +78,7 @@
 				</td>
 			</tr>
 		</table>
+		<h1 v-else>No Records here</h1>
 	</div>
 </template>
 

@@ -1,11 +1,21 @@
 <!-- @format -->
 
 <template>
-	<div class="hello" @copy.prevent @paste.prevent>
+	<div
+		class="hello"
+		@copy.prevent
+		@paste.prevent>
 		<legend style="font-weight: bold; font-size: 1.5rem">{{ user }} Data</legend>
 		<hr />
-		<div v-if="search" id="searchSection" style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
-			<label for="regno" class="searchLabel">{{ labelRegCNIC }}</label>
+		<div
+			v-if="search"
+			id="searchSection"
+			style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
+			<label
+				for="regno"
+				class="searchLabel"
+				>{{ labelRegCNIC }}</label
+			>
 			<el-input
 				show-word-limit
 				type="text"
@@ -15,19 +25,30 @@
 				class="input"
 				required
 				style="width: 30%"
-				onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
-			/>
-			<el-button type="primary" class="input" @click="searchUsr">Search</el-button>
+				onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
+			<el-button
+				type="primary"
+				class="input"
+				@click="searchUsr"
+				>Search</el-button
+			>
 		</div>
 
-		<div style="border-color: black; margin: 0.5rem auto" id="formSection">
+		<div
+			style="border-color: black; margin: 0.5rem auto"
+			id="formSection">
 			<div id="intdiv">
 				<form
 					@submit.prevent="submit"
-					style="padding: 3%; margin: 0%; box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5); transform: translateY(5px)"
-				>
-					<div class="row" v-if="nameVisible">
-						<label for="name" class="label">Name</label>
+					style="padding: 3%; margin: 0%; box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5); transform: translateY(5px)">
+					<div
+						class="row"
+						v-if="nameVisible">
+						<label
+							for="name"
+							class="label"
+							>Name</label
+						>
 						<el-input
 							show-word-limit
 							:disabled="isDisabled"
@@ -40,12 +61,17 @@
 							name="name"
 							v-model="name"
 							required
-							pattern="[A-Za-z.\- ]+"
-						/>
+							pattern="[A-Za-z.\- ]+" />
 					</div>
 
-					<div class="row" v-if="regnoVisible">
-						<label for="regno" class="label">Reg No</label>
+					<div
+						class="row"
+						v-if="regnoVisible">
+						<label
+							for="regno"
+							class="label"
+							>Reg No</label
+						>
 						<el-input
 							show-word-limit
 							:disabled="isDisabled"
@@ -58,11 +84,16 @@
 							name="regno"
 							v-model="regno"
 							required
-							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
-						/>
+							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
 					</div>
-					<div class="row" v-if="cnicVisible">
-						<label for="cnic" class="label">CNIC</label>
+					<div
+						class="row"
+						v-if="cnicVisible">
+						<label
+							for="cnic"
+							class="label"
+							>CNIC</label
+						>
 						<el-input
 							show-word-limit
 							:disabled="isDisabled"
@@ -75,11 +106,16 @@
 							name="cnic"
 							v-model="cnic"
 							required
-							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
-						/>
+							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
 					</div>
-					<div class="row" v-if="deptVisible">
-						<label for="dept" class="label">Department</label>
+					<div
+						class="row"
+						v-if="deptVisible">
+						<label
+							for="dept"
+							class="label"
+							>Department</label
+						>
 						<el-select
 							:disabled="isDisabled"
 							v-model="deptName"
@@ -87,13 +123,23 @@
 							effect="dark"
 							placeholder="Select"
 							style="width: 100%"
-							size="large"
-						>
-							<el-option required v-for="item in depts" :key="item.value" :label="item.label" :value="item.value" />
+							size="large">
+							<el-option
+								required
+								v-for="item in depts"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value" />
 						</el-select>
 					</div>
-					<div class="row" v-if="semsVisible">
-						<label for="semester" class="label">Semester</label>
+					<div
+						class="row"
+						v-if="semsVisible">
+						<label
+							for="semester"
+							class="label"
+							>Semester</label
+						>
 						<el-select
 							:disabled="isDisabled"
 							required
@@ -102,14 +148,24 @@
 							effect="dark"
 							placeholder="Select"
 							style="width: 100%"
-							size="large"
-						>
-							<el-option required v-for="item in semesters" :key="item.value" :label="item.label" :value="item.value" />
+							size="large">
+							<el-option
+								required
+								v-for="item in semesters"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value" />
 						</el-select>
 					</div>
 
-					<div class="row" v-if="progVisible">
-						<label for="program" class="label">Program</label>
+					<div
+						class="row"
+						v-if="progVisible">
+						<label
+							for="program"
+							class="label"
+							>Program</label
+						>
 						<el-select
 							:disabled="isDisabled"
 							required
@@ -118,14 +174,24 @@
 							effect="dark"
 							placeholder="Select"
 							style="width: 100%"
-							size="large"
-						>
-							<el-option required v-for="(item, index) in programs" :key="index" :label="item.label" :value="item.value" />
+							size="large">
+							<el-option
+								required
+								v-for="(item, index) in programs"
+								:key="index"
+								:label="item.label"
+								:value="item.value" />
 						</el-select>
 					</div>
 
-					<div class="row" v-if="ageVisible">
-						<label for="age" class="label">Age</label>
+					<div
+						class="row"
+						v-if="ageVisible">
+						<label
+							for="age"
+							class="label"
+							>Age</label
+						>
 						<el-input
 							show-word-limit
 							:disabled="isDisabled"
@@ -140,11 +206,16 @@
 							name="age"
 							v-model="age"
 							required
-							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
-						/>
+							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
 					</div>
-					<div class="row" v-if="genderVisible">
-						<label for="gender" class="label">Gender</label>
+					<div
+						class="row"
+						v-if="genderVisible">
+						<label
+							for="gender"
+							class="label"
+							>Gender</label
+						>
 						<el-select
 							:disabled="isDisabled"
 							required
@@ -153,14 +224,24 @@
 							effect="dark"
 							placeholder="Select"
 							style="width: 100%"
-							size="large"
-						>
-							<el-option required v-for="item in genders" :key="item.value" :label="item.label" :value="item.value" />
+							size="large">
+							<el-option
+								required
+								v-for="item in genders"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value" />
 						</el-select>
 					</div>
 
-					<div class="row" v-if="hfeeVisible">
-						<label for="hostfee" class="label">Hostel Fee </label>
+					<div
+						class="row"
+						v-if="hfeeVisible">
+						<label
+							for="hostfee"
+							class="label"
+							>Hostel Fee
+						</label>
 						<el-input
 							show-word-limit
 							:disabled="isDisabled"
@@ -173,19 +254,40 @@
 							name="hostfee"
 							v-model="hostfee"
 							required
-							onkeypress="if ( isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;"
-						/>
+							onkeypress="if ( isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;" />
 					</div>
 					<!-- <br /> -->
-					<div class="row" v-if="addVisible">
-						<label for="image" class="label">Upload Image</label>
-						<input type="file" accept="image/*" @change="encodeImageFileAsURL($event)" required />
+					<div
+						class="row"
+						v-if="addVisible">
+						<label
+							for="image"
+							class="label"
+							>Upload Image</label
+						>
+						<input
+							type="file"
+							accept="image/*"
+							@change="encodeImageFileAsURL($event)"
+							required />
 					</div>
-					<div class="row" v-if="updatevisible">
-						<label for="image" class="label">Upload Image</label>
-						<input type="file" accept="image/*" @change="encodeImageFileAsURL($event)" />
+					<div
+						class="row"
+						v-if="updatevisible">
+						<label
+							for="image"
+							class="label"
+							>Upload Image</label
+						>
+						<input
+							type="file"
+							accept="image/*"
+							@change="encodeImageFileAsURL($event)" />
 					</div>
-					<div class="row" v-if="removeVisible || updatevisible" style="display: flex; justify-content: center">
+					<div
+						class="row"
+						v-if="removeVisible || updatevisible"
+						style="display: flex; justify-content: center">
 						<div class="demo-image__preview">
 							<el-image
 								:src="image"
@@ -193,19 +295,42 @@
 								:zoom-rate="1.2"
 								:preview-src-list="srcList"
 								:initial-index="4"
-								fit="cover"
-							/>
+								fit="cover" />
 						</div>
 					</div>
-					<div class="row" v-if="addVisible" style="display: flex; justify-content: center">
+					<div
+						class="row"
+						v-if="addVisible"
+						style="display: flex; justify-content: center">
 						<div class="demo-image__preview">
-							<img src="#" style="width: 100px; height: 100px" id="addImg" alt="Image here" />
+							<img
+								src="#"
+								style="width: 100px; height: 100px"
+								id="addImg"
+								alt="Image here" />
 						</div>
 					</div>
 
-					<el-button native-type="submit" class="buttons" v-if="addVisible">ADD</el-button>
-					<el-button native-type="submit" class="buttons" :disabled="isRemoveDisabled" v-if="removeVisible">REMOVE</el-button>
-					<el-button native-type="submit" class="buttons" :disabled="isDisabled" v-if="updatevisible">UPDATE</el-button>
+					<el-button
+						native-type="submit"
+						class="buttons"
+						v-if="addVisible"
+						>ADD</el-button
+					>
+					<el-button
+						native-type="submit"
+						class="buttons"
+						:disabled="isRemoveDisabled"
+						v-if="removeVisible"
+						>REMOVE</el-button
+					>
+					<el-button
+						native-type="submit"
+						class="buttons"
+						:disabled="isDisabled"
+						v-if="updatevisible"
+						>UPDATE</el-button
+					>
 				</form>
 			</div>
 		</div>
@@ -305,7 +430,7 @@
 			this.depts = depts;
 			this.semesters = semesters;
 			this.programs = programs;
-			this.button = this.user; //this.user.split(" ")[0];
+			this.button = this.user;
 
 			if (this.button == "Add Student") {
 				this.showAdd();
@@ -375,18 +500,7 @@
 			}
 		},
 		methods: {
-			// encodeImageFileAsURL(element) {
-			// 	var file = element.target.files[0];
-			// 	if (!file) return;
-
-			// 	var reader = new FileReader();
-			// 	reader.onloadend = function () {
-
-			// 		printIMG(reader.result);
-			// 		newFunction(reader, "flex");
-			// 	};
-			// 	reader.readAsDataURL(file);
-			// },
+			
 			encodeImageFileAsURL(element) {
 				var file = element.target.files[0];
 				if (!file) return;
@@ -401,7 +515,6 @@
 				var reader = new FileReader();
 				reader.onloadend = function () {
 					var img = new Image();
-					console.log(img);
 					img.src = reader.result;
 					this.image = img.src;
 					// this.srcList.push(img.src);
@@ -497,7 +610,6 @@
 				}
 				try {
 					let response = await axios.get(`${VUE_APP_URL}/${this.searchUser}/${id}`);
-					console.log(response.data[0]);
 					this.setData(response.data[0]);
 				} catch (error) {
 					ElMessageBox.alert(error.message.toString(), "Error", {
@@ -508,7 +620,6 @@
 				}
 			},
 			setData(val) {
-				console.log(val);
 				if (val == undefined) {
 					ElMessageBox.alert("No record found", "Message", {
 						autofocus: true,
@@ -531,20 +642,13 @@
 				this.srcList.push(val.image);
 				if (!this.removeVisible) this.isDisabled = false;
 				else this.isRemoveDisabled = false;
-
-				console.log("previous ", this.prevCNIC, this.prevRegNo);
 			},
 			capatilize(str) {
-				console.log("str ", str);
 				if (str == undefined || str == null || str == "") return;
 				let name = str.split(" ");
-				console.log("name ", name);
 				name = name.map((n) => {
-					console.log(n);
 					return n[0].toUpperCase() + n.substring(1).toLowerCase();
 				});
-				console.log(name);
-				console.log(name.join(" "));
 				return name.join(" ");
 			},
 			async submit() {

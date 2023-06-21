@@ -4,22 +4,25 @@
 	<div class="hello">
 		<fieldset>
 			<legend style="font-weight: bold; font-size: 1.5rem; background: rgba(255, 255, 255, 0.25); padding: 1rem">Admin credientials</legend>
-			<el-form @submit.prevent="disp" style="padding: 1rem; display: flex; flex-direction: column">
+			<el-form
+				@submit.prevent="disp"
+				style="padding: 1rem; display: flex; flex-direction: column">
 				<div style="display: flex; align-items: center">
 					<label for="username">Username</label>
 					<el-input
+						show-word-limit
 						type="text"
 						v-model="username"
 						:maxlength="15"
 						:minlength="5"
 						class="input"
 						required
-						input-style="padding:14px 20px;margin: 8px 0;width:100%;"
-					/>
+						input-style="padding:14px 20px;margin: 8px 0;width:100%;" />
 				</div>
 				<div style="display: flex; align-items: center">
 					<label for="password">Password</label>
 					<el-input
+						show-word-limit
 						type="password"
 						v-model="password"
 						:maxlength="15"
@@ -27,10 +30,13 @@
 						class="input"
 						required
 						input-style="padding:14px 20px;margin: 8px 0;width:100%;"
-						show-password
-					/>
+						show-password />
 				</div>
-				<button type="submit" id="button">Login</button>
+				<button
+					type="submit"
+					id="button">
+					Login
+				</button>
 			</el-form>
 		</fieldset>
 	</div>
@@ -39,27 +45,29 @@
 <script>
 	import axios from "axios";
 	import { ElMessageBox } from "element-plus";
+	import { ref } from "vue";
+	import { useStore } from 'vuex';
+	import { useRouter } from 'vue-router';
+
 	export default {
 		name: "HelloWorld",
 		props: {
 			msg: String,
 		},
-		data() {
-			return {
-				username: "",
-				password: "",
-			};
-		},
-		methods: {
-			async disp() {
+		setup(){
+			const store = useStore();
+			const router = useRouter();
+			let username= ref("");
+			let password=ref("");
+			
+			async function disp() {
 				await axios
 					.get("http://localhost:3000/admin")
 					.then((response) => {
-						console.log(response);
-						if (this.username == response.data[0] && this.password == response.data[1]) {
-							this.$store.dispatch("setUser", "Admin");
-							this.$store.dispatch("setLoginKey", "loggedIn");
-							this.$router.push("/MainMenu");
+						if (username.value == response.data[0] && password.value == response.data[1]) {
+							store.dispatch("setUser", "Admin");
+							store.dispatch("setLoginKey", "loggedIn");
+							router.push("/MainMenu");
 						} else {
 							ElMessageBox.alert("Invalid Credientials", "Error", {
 								autofocus: true,
@@ -73,13 +81,14 @@
 							confirmButtonText: "OK",
 						});
 					});
-			},
-			// setShow() {
-			// 	console.log("show");
-			// 	this.show = !this.show;
-			// 	console.log(this.show);
-			// },
+			}
+			return {
+				username,
+				password,
+				disp
+			};
 		},
+		
 	};
 </script>
 

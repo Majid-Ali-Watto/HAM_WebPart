@@ -18,7 +18,7 @@
 					{ option: "Add Mess Warden", img: require("../assets/add.png"), name: "GenericForm", route: "GenericForm" },
 					{ option: "Remove Mess Warden", img: require("../assets/remove.png"), name: "GenericForm", route: "GenericForm" },
 					{ option: "Update Mess Warden", img: require("../assets/update.png"), name: "GenericForm", route: "GenericForm" },
-					{ option: "View Mess Warden", img: require("../assets/view.png"), name: "ViewWardensData", route: "ViewWardensData" },
+					{ option: "View Mess Warden", img: require("../assets/view.png"),  name: "ViewData", route: "ViewData" },
 				],
 			};
 		},

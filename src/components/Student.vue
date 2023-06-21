@@ -6,6 +6,7 @@
 
 <script>
 	import MainMenu from "./MainMenu.vue";
+	// const MainMenu=()=>import(`../components/MainMenu.vue`)
 	export default {
 		name: "StudentSec",
 		components: { MainMenu },

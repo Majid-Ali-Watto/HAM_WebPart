@@ -19,7 +19,7 @@
 		methods: {
 			moveTo(url, user) {
 				this.$store.dispatch("setUser", user);
-				console.log(this.$store.getters.getUser);
+				console.log('user : ',this.$store.getters.getUser);
 				this.$router.push({ name: url });
 			},
 		},

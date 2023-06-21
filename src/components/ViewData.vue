@@ -1,24 +1,37 @@
 <!-- @format -->
 
 <template>
-	<div class="hello" @copy.prevent @paste.prevent>
+	<div
+		class="hello"
+		@copy.prevent
+		@paste.prevent>
 		<div>
-			<div id="searchSection" style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
-				<label class="label">Reg No</label>
+			<div
+				id="searchSection"
+				style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
+				<label class="label">{{ getLabel }}</label>
 				<el-input
+					show-word-limit
 					type="text"
-					v-model="regno"
-					:maxlength="11"
-					:minlength="11"
+					v-model="state.regno"
+					:maxlength="getLength"
+					:minlength="getLength"
 					class="input"
 					required
 					style="width: 30%"
-					onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
-				/>
-				<el-button type="primary" class="input" @click="getStudent()">Search</el-button>
+					onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
+				<el-button
+					type="primary"
+					class="input"
+					@click="getStudent()"
+					>Search</el-button
+				>
 			</div>
 
-			<div v-if="showData" style="overflow-x: auto" id="searchedTables">
+			<div
+				v-if="state.showData"
+				style="overflow-x: auto"
+				id="searchedTables">
 				<legend style="font-weight: bold">Details</legend>
 
 				<table class="table">
@@ -28,14 +41,17 @@
 							scope="col"
 							v-for="column in columnNames"
 							v-bind:key="column.value"
-							@copy.prevent
-						>
+							@copy.prevent>
 							{{ column.toUpperCase() }}
 						</th>
 					</tr>
 
-					<tr v-for="row in allData" v-bind:key="row.rollno">
-						<td v-for="column in columnNames" v-bind:key="column">
+					<tr
+						v-for="row in state.allData"
+						v-bind:key="row.rollno">
+						<td
+							v-for="column in columnNames"
+							v-bind:key="column">
 							<div v-if="column == 'image'">
 								<el-image
 									:src="row[column]"
@@ -44,30 +60,51 @@
 									:zoom-rate="1.2"
 									:preview-src-list="[row[column]]"
 									:initial-index="4"
-									fit="cover"
-								/>
+									fit="cover" />
 							</div>
-							<div v-else @copy.prevent>
+							<div
+								v-else
+								@copy.prevent>
 								{{ row[column] }}
 							</div>
 						</td>
 					</tr>
 				</table>
 
-				<el-button type="primary" class="input" @click="showData = false" @copy.prevent>Close</el-button>
+				<el-button
+					type="primary"
+					class="input"
+					@click="state.showData = false"
+					@copy.prevent
+					>Close</el-button
+				>
 			</div>
 		</div>
 
-		<div id="tables" @copy.prevent>
-			<table class="table" v-if="info.length > 0">
+		<div
+			id="tables"
+			@copy.prevent>
+			<table
+				class="table"
+				v-if="state.info.length > 0">
 				<tr v-if="columnNames">
-					<th style="background-color: cyan; color: black" scope="col" v-for="column in columnNames" v-bind:key="column.value">
+					<th
+						style="background-color: cyan; color: black"
+						scope="col"
+						v-for="column in columnNames"
+						v-bind:key="column.value">
 						{{ column == "status" ? "Fee Status".toUpperCase() : column.toUpperCase() }}
 					</th>
 				</tr>
 
-				<tr v-for="row in info" v-bind:key="row.rollno" @dblclick="showRow(row)">
-					<td v-for="column in columnNames" v-bind:key="column" @copy.prevent>
+				<tr
+					v-for="row in state.info"
+					v-bind:key="row.rollno"
+					@dblclick="showRow(row)">
+					<td
+						v-for="column in columnNames"
+						v-bind:key="column"
+						@copy.prevent>
 						<div v-if="column == 'image'">
 							<el-image
 								:src="row[column]"
@@ -76,8 +113,7 @@
 								:zoom-rate="1.2"
 								:preview-src-list="[row[column]]"
 								:initial-index="4"
-								fit="cover"
-							/>
+								fit="cover" />
 						</div>
 						<div v-else>
 							<div v-if="column == 'status'">
@@ -99,38 +135,58 @@
 	import axios from "axios";
 	import { ElMessageBox } from "element-plus";
 	import VUE_APP_URL from "@/assets/url";
+	import { reactive } from 'vue';
 	export default {
 		name: "ViewData",
 		mounted() {
 			if (this.$store.getters.getLoginKey != "loggedIn") this.$router.push("/");
-
-			this.getData();
+			this.getData(this.$store.getters.getUser);
+		},
+		setup() {
+			const state = reactive({
+				info: [],
+				showData: false,
+				regno: "",
+				allData: [],
+			});
+			return {
+				state,
+			};
 		},
 		computed: {
 			columnNames: function () {
 				const names = new Set();
-				for (const row of this.info) {
+				for (const row of this.state.info) {
 					for (let key of Object.keys(row)) {
 						if (key == "did" || key == "imgId") continue;
-
 						names.add(key);
 					}
 				}
 				return names;
 			},
+			getLength: function () {
+				if (this.$store.getters.getUser != "View Students") return 13;
+				else return 11;
+			},
+			getLabel: function () {
+				if (this.$store.getters.getUser != "View Students") return "CNIC";
+				else return "RegNo";
+			},
 		},
-		data() {
-			return {
-				info: [],
-				showData: false,
-				regno: "",
-				allData: [],
-			};
-		},
+	
+		// data() {
+		// 	return {
+		// 		info: [],
+		// 		showData: false,
+		// 		regno: "",
+		// 		allData: [],
+		// 	};
+		// },
 		methods: {
 			showRow(row) {
-				let data = "Name : " + row.sname + " <br> RegNo : " + row.rollno + "  <br> CNIC : " + row.cnic;
-
+				let data = "";
+				if (this.$store.getters.getUser == "View Students") data = "Name : " + row.sname + " <br> RegNo : " + row.rollno + "  <br> CNIC : " + row.cnic;
+				else data = "Name : " + row.name + "  <br> CNIC : " + row.cnic;
 				ElMessageBox.alert(data, "Details", {
 					autofocus: true,
 					confirmButtonText: "OK",
@@ -138,12 +194,19 @@
 					dangerouslyUseHTMLString: true,
 				});
 			},
-			async getData() {
+			getUserEndpoint(user) {
+				if (user == "View Security Warden") return "securitySupervosor";
+				else if (user == "View Mess Warden") return "messSupervisor";
+				else if (user == "View Students") return "students";
+				else return "hostelSupervisor";
+			},
+			async getData(user) {
+				let u = "";
+				u = this.getUserEndpoint(user);
 				await axios
-					.get(`${VUE_APP_URL}/students`)
+					.get(`${VUE_APP_URL}/${u}`)
 					.then((response) => {
-						console.log(response.data);
-						if (typeof response.data != "string") this.info = response.data;
+						if (typeof response.data != "string") this.state.info = response.data;
 					})
 					.catch((error) => {
 						ElMessageBox.alert(error.message, "Error", {
@@ -154,24 +217,24 @@
 			},
 
 			async getStudent() {
-				if (this.showData == true) return;
-				let id = this.regno;
+				if (this.state.showData == true) return;
+				let u = "";
+				u = this.getUserEndpoint(this.$store.getters.getUser);
+				let id = this.state.regno;
 				let idCopy = id;
-				// id = Number(id);
-				if (!Number(id) || idCopy.toString().length < 11) {
-					ElMessageBox.alert("Please enter valid registration number", "Validate RegNo", {
+				if (!Number(id) || idCopy.toString().length < this.getLength) {
+					ElMessageBox.alert("Please enter valid registration number", `Validate ${this.getLabel}`, {
 						autofocus: true,
 						confirmButtonText: "OK",
 					});
 					return;
 				}
 				await axios
-					.get(`${VUE_APP_URL}/students/${id}`)
+					.get(`${VUE_APP_URL}/${u}/${id}`)
 					.then((response) => {
-						console.log("students api called");
 						if (response.data.length > 0) {
-							this.showData = true;
-							this.allData = response.data;
+							this.state.showData = true;
+							this.state.allData = response.data;
 						} else {
 							ElMessageBox.alert("No Record Found", "Message", {
 								autofocus: true,

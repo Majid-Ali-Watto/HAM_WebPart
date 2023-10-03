@@ -4,39 +4,45 @@
 	<div class="hello">
 		<fieldset>
 			<legend style="font-weight: bold; font-size: 1.5rem; background: rgba(255, 255, 255, 0.25); padding: 1rem">Admin credientials</legend>
-			<el-form
-				@submit.prevent="disp"
-				style="padding: 1rem; display: flex; flex-direction: column">
-				<div style="display: flex; align-items: center">
-					<label for="username">Username</label>
-					<el-input
-						show-word-limit
-						type="text"
-						v-model="username"
-						:maxlength="15"
-						:minlength="5"
-						class="input"
-						required
-						input-style="padding:14px 20px;margin: 8px 0;width:100%;" />
-				</div>
-				<div style="display: flex; align-items: center">
-					<label for="password">Password</label>
-					<el-input
-						show-word-limit
-						type="password"
-						v-model="password"
-						:maxlength="15"
-						:minlength="5"
-						class="input"
-						required
-						input-style="padding:14px 20px;margin: 8px 0;width:100%;"
-						show-password />
-				</div>
-				<button
-					type="submit"
-					id="button">
-					Login
-				</button>
+			<el-form @submit.prevent="disp" style="padding: 1rem; display: flex; flex-direction: column; background-color: #333">
+				<el-row style="display: flex; align-items: center">
+					<el-col :lg="8" :md="8" :sm="8">
+						<label for="username">Username</label>
+					</el-col>
+					<el-col :lg="16" :md="16" :sm="16">
+						<el-input
+							show-word-limit
+							type="text"
+							v-model="username"
+							:maxlength="15"
+							:minlength="5"
+							class="input"
+							required
+							input-style="padding:14px 20px;margin: 8px 0;width:100%;" />
+					</el-col>
+				</el-row>
+				<el-row style="display: flex; align-items: center">
+					<el-col :lg="8" :md="8" :sm="8">
+						<label for="password">Password</label>
+					</el-col>
+					<el-col :lg="16" :md="16" :sm="16">
+						<el-input
+							show-word-limit
+							type="password"
+							v-model="password"
+							:maxlength="15"
+							:minlength="5"
+							class="input"
+							required
+							input-style="padding:14px 20px;margin: 8px 0;width:100%;"
+							show-password
+					/></el-col>
+				</el-row>
+				<el-row style="display: flex; align-items: center">
+					<el-col :lg="24" :md="24" :sm="24">
+						<button type="submit" id="button">Login</button>
+					</el-col>
+				</el-row>
 			</el-form>
 		</fieldset>
 	</div>
@@ -46,20 +52,20 @@
 	import axios from "axios";
 	import { ElMessageBox } from "element-plus";
 	import { ref } from "vue";
-	import { useStore } from 'vuex';
-	import { useRouter } from 'vue-router';
+	import { useStore } from "vuex";
+	import { useRouter } from "vue-router";
 
 	export default {
 		name: "HelloWorld",
 		props: {
 			msg: String,
 		},
-		setup(){
+		setup() {
 			const store = useStore();
 			const router = useRouter();
-			let username= ref("");
-			let password=ref("");
-			
+			let username = ref("");
+			let password = ref("");
+
 			async function disp() {
 				await axios
 					.get("http://localhost:3000/admin")
@@ -85,10 +91,9 @@
 			return {
 				username,
 				password,
-				disp
+				disp,
 			};
 		},
-		
 	};
 </script>
 
@@ -106,6 +111,7 @@
 	}
 	label {
 		font-size: x-large;
+		color: white;
 	}
 
 	#button {

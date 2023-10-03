@@ -19,7 +19,7 @@
 		methods: {
 			moveTo(url, user) {
 				this.$store.dispatch("setUser", user);
-				console.log('user : ',this.$store.getters.getUser);
+				console.log("user : ", this.$store.getters.getUser);
 				this.$router.push({ name: url });
 			},
 		},
@@ -32,6 +32,8 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
+		align-content: center;
+		align-items: center;
 		flex-wrap: wrap;
 		margin: 0 auto !important;
 
@@ -85,5 +87,14 @@
 		padding: 5px;
 		user-select: none;
 		-webkit-user-drag: none;
+	}
+	#card:hover {
+		background-color: orangered;
+		color: white;
+		box-shadow: rgb(255, 255, 255, 0.2) 0px 7px 29px 0px;
+		transform: scale(1.1);
+		transition: all 0.3s ease-in;
+		margin-top: 1.1rem;
+		outline: 1px solid skyblue;
 	}
 </style>

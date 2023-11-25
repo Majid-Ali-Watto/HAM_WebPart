@@ -1,552 +1,770 @@
+<!-- @format -->
+
 <template>
-  <div class="hello">
-    <div>
-      <div>
-        <div class="row" v-if="search">
-          <label for="regno" class="label">{{ labelRegCNIC }}</label>
-          <input
-            type="text"
-            id="regno"
-            :maxlength="len"
-            :minlength="len"
-            class="searchbox"
-            name="regno"
-            v-model="regnoSearch"
-            required
-          />
-          <button id="search" @click="search">Search</button>
-        </div>
-      </div>
-      <fieldset style="background-color: lightgreen">
-        <legend style="font-weight: bold; font-size: 1.5rem">
-          {{ user }} Data
-        </legend>
-        <div id="intdiv">
-          <form @submit.prevent="submit">
-            <div class="row" v-if="nameVisible">
-              <label for="name" class="label">Name</label>
-              <input
-                type="text"
-                id="name"
-                maxlength="255"
-                minlength="3"
-                class="inputbox"
-                name="name"
-                v-model="name"
-                required
-              />
-            </div>
+	<div class="hello" @copy.prevent @paste.prevent>
+		<legend style="font-weight: bold; font-size: 1.5rem">{{ user }} Data</legend>
+		<hr />
+		<div v-if="search" id="searchSection" style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
+			<label for="regno" class="searchLabel">{{ labelRegCNIC }}</label>
+			<el-input
+				show-word-limit
+				type="text"
+				v-model="regnoSearch"
+				:maxlength="len"
+				:minlength="len"
+				class="input"
+				required
+				style="width: 30%"
+				onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
+			<el-button type="primary" class="input" @click="searchUsr">Search</el-button>
+		</div>
 
-            <div class="row" v-if="regnoVisible">
-              <label for="regno" class="label">Reg No</label>
-              <input
-                type="text"
-                id="regno"
-                maxlength="11"
-                minlength="11"
-                class="inputbox"
-                name="regno"
-                v-model="regno"
-                required
-              />
-            </div>
-            <div class="row" v-if="cnicVisible">
-              <label for="cnic" class="label">CNIC</label>
-              <input
-                type="text"
-                id="cnic"
-                maxlength="13"
-                minlength="13"
-                class="inputbox"
-                name="cnic"
-                v-model="cnic"
-                required
-              />
-            </div>
-            <div class="row" v-if="deptVisible">
-              <label for="dept" class="label">Department</label>
-              <select id="deptName" v-model="deptName" name="deptName">
-                <option
-                  v-for="dept in depts"
-                  :value="dept.name"
-                  v-bind:key="dept.name"
-                >
-                  {{ dept.name }}
-                </option>
-              </select>
-            </div>
-            <div class="row" v-if="semsVisible">
-              <label for="semester" class="label">Semester</label>
-              <select id="semester" v-model="sems" name="semester">
-                <option v-for="sem in semesters" :value="sem" v-bind:key="sem">
-                  {{ sem }}
-                </option>
-              </select>
-            </div>
+		<div style="border-color: black; margin: 0.5rem auto" id="formSection">
+			<div id="intdiv">
+				<form
+					@submit.prevent="submit"
+					style="
+						padding: 3%;
+						margin: 0%;
+						box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+						transform: translateY(5px);
+						background-color: whitesmoke;
+					">
+					<div class="row" v-if="nameVisible">
+						<label for="name" class="label">Name</label>
+						<el-input
+							show-word-limit
+							:disabled="isDisabled"
+							type="text"
+							id="name"
+							placeholder="Quaid-I-Azam, Majid Ali, Mr. Ali"
+							:maxlength="100"
+							:minlength="3"
+							class="inputbox"
+							name="name"
+							v-model="name"
+							required
+							pattern="[A-Za-z.\- ]+" />
+					</div>
 
-            <div class="row" v-if="progVisible">
-              <label for="program" class="label">Program</label>
-              <select id="program" v-model="program" name="program">
-                <option
-                  v-for="prog in programs"
-                  :value="prog"
-                  v-bind:key="prog"
-                >
-                  {{ prog }}
-                </option>
-              </select>
-            </div>
+					<div class="row" v-if="regnoVisible">
+						<label for="regno" class="label">Reg No</label>
+						<el-input
+							show-word-limit
+							:disabled="isDisabled"
+							type="text"
+							id="regno"
+							placeholder="04071813051"
+							:maxlength="11"
+							:minlength="11"
+							class="inputbox"
+							name="regno"
+							v-model="regno"
+							required
+							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
+					</div>
+					<div class="row" v-if="cnicVisible">
+						<label for="cnic" class="label">CNIC</label>
+						<el-input
+							show-word-limit
+							:disabled="isDisabled"
+							placeholder="Without Dashes(-) or Spacing like 1111111111111"
+							type="text"
+							id="cnic"
+							:maxlength="13"
+							:minlength="13"
+							class="inputbox"
+							name="cnic"
+							v-model="cnic"
+							required
+							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
+					</div>
+					<div class="row" v-if="deptVisible">
+						<label for="dept" class="label">Department</label>
+						<el-select
+							:disabled="isDisabled"
+							v-model="deptName"
+							filterable
+							effect="dark"
+							placeholder="Select"
+							style="width: 100%"
+							size="large">
+							<el-option required v-for="item in depts" :key="item.value" :label="item.label" :value="item.value" />
+						</el-select>
+					</div>
+					<div class="row" v-if="semsVisible">
+						<label for="semester" class="label">Semester</label>
+						<el-select
+							:disabled="isDisabled"
+							required
+							v-model="sems"
+							filterable
+							effect="dark"
+							placeholder="Select"
+							style="width: 100%"
+							size="large">
+							<el-option required v-for="item in semesters" :key="item.value" :label="item.label" :value="item.value" />
+						</el-select>
+					</div>
 
-            <div class="row" v-if="ageVisible">
-              <label for="age" class="label">Age</label>
-              <input
-                type="number"
-                id="age"
-                maxlength="2"
-                minlength="2"
-                min="18"
-                max="60"
-                class="inputbox"
-                name="age"
-                v-model="age"
-                required
-              />
-            </div>
-            <div class="row" v-if="genderVisible">
-              <label for="gender" class="label">Gender</label>
-              <select id="gender" v-model="gender" name="gender">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="others">Others</option>
-              </select>
-            </div>
-            <div class="row" v-if="hfeeVisible">
-              <label for="hostfee" class="label">Hostel Fee</label>
-              <input
-                type="number"
-                id="hostfee"
-                min="0"
-                max="1000000"
-                class="inputbox"
-                name="hostfee"
-                v-model="hostfee"
-              />
-            </div>
+					<div class="row" v-if="progVisible">
+						<label for="program" class="label">Program</label>
+						<el-select
+							:disabled="isDisabled"
+							required
+							v-model="program"
+							filterable
+							effect="dark"
+							placeholder="Select"
+							style="width: 100%"
+							size="large">
+							<el-option required v-for="(item, index) in programs" :key="index" :label="item.label" :value="item.value" />
+						</el-select>
+					</div>
 
-            <div class="row" v-if="hfeeVisible">
-              <!-- <input type="file" @change="previewFiles" multiple> -->
-              <label for="hostfee" class="label">Select Image</label>
+					<div class="row" v-if="ageVisible">
+						<label for="age" class="label">Age</label>
+						<el-input
+							show-word-limit
+							:disabled="isDisabled"
+							type="number"
+							id="age"
+							placeholder="Between 18-60"
+							:maxlength="2"
+							:minlength="2"
+							:min="18"
+							:max="60"
+							class="inputbox"
+							name="age"
+							v-model="age"
+							required
+							onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
+					</div>
+					<div class="row" v-if="genderVisible">
+						<label for="gender" class="label">Gender</label>
+						<el-select
+							:disabled="isDisabled"
+							required
+							v-model="gender"
+							filterable
+							effect="dark"
+							placeholder="Select"
+							style="width: 100%"
+							size="large">
+							<el-option required v-for="item in genders" :key="item.value" :label="item.label" :value="item.value" />
+						</el-select>
+					</div>
 
-              <input type="file" @change="encodeImageFileAsURL($event)" />
-            </div>
-            <!-- <input type="file" name="" id="fileId" @change="imageUploaded()" /> -->
-            <button type="submit" class="buttons" v-if="addVisible">ADD</button>
-            <button type="submit" class="buttons" v-if="removeVisible">
-              REMOVE
-            </button>
-            <button type="submit" class="buttons" v-if="updatevisible">
-              UPDATE
-            </button>
-          </form>
-        </div>
-      </fieldset>
-    </div>
-  </div>
+					<div class="row" v-if="hfeeVisible">
+						<label for="hostfee" class="label">Hostel Fee </label>
+						<el-input
+							show-word-limit
+							:disabled="isDisabled"
+							type="number"
+							id="hostfee"
+							:min="0"
+							placeholder="between 0-1000000"
+							:max="1000000"
+							class="inputbox"
+							name="hostfee"
+							v-model="hostfee"
+							required
+							onkeypress="if ( isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;" />
+					</div>
+					<!-- <br /> -->
+					<div class="row" v-if="addVisible">
+						<label for="image" class="label">Upload Image</label>
+						<input type="file" accept="image/*" @change="encodeImageFileAsURL($event)" required />
+					</div>
+					<div class="row" v-if="updatevisible">
+						<label for="image" class="label">Upload Image</label>
+						<input type="file" accept="image/*" @change="encodeImageFileAsURL($event)" />
+					</div>
+					<div class="row" v-if="removeVisible || updatevisible" style="display: flex; justify-content: center">
+						<div class="demo-image__preview">
+							<el-image
+								:src="image"
+								style="width: 100px; height: 100px"
+								:zoom-rate="1.2"
+								:preview-src-list="srcList"
+								:initial-index="4"
+								fit="cover" />
+						</div>
+					</div>
+					<div class="row" v-if="addVisible" style="display: flex; justify-content: center">
+						<div class="demo-image__preview">
+							<img src="#" style="width: 100px; height: 100px" id="addImg" alt="Image here" />
+						</div>
+					</div>
+
+					<el-button native-type="submit" class="buttons" v-if="addVisible">ADD</el-button>
+					<el-button native-type="submit" class="buttons" :disabled="isRemoveDisabled" v-if="removeVisible">REMOVE</el-button>
+					<el-button native-type="submit" class="buttons" :disabled="isDisabled" v-if="updatevisible">UPDATE</el-button>
+				</form>
+			</div>
+		</div>
+		<!-- </div> -->
+	</div>
 </template>
 
 <script>
-import axios from "axios";
-import depts from "../assets/Departments/dept";
-import semesters from "../assets/Semesters/semester";
-import programs from "@/assets/Programs/programs";
-// import * as fs from 'fs';
-import { getBase64EncodedRegNo } from "@/QR/qrCreater";
-let image = "";
-function printIMG(img) {
-  image = img;
-}
+	import axios from "axios";
+	import depts from "../assets/Departments/dept";
+	import semesters from "../assets/Semesters/semester";
+	import programs from "@/assets/Programs/programs";
+	import { ElMessageBox } from "element-plus";
+	import { getBase64EncodedRegNo } from "@/QR/qrCreater";
+	import VUE_APP_URL from "@/assets/url";
+	let image = "";
+	function printIMG(img) {
+		image = img;
+	}
+	async function apiCall(method, endpoint, payload) {
+		try {
+			const response = await axios[method](endpoint, payload);
+			return response.data;
+		} catch (error) {
+			ElMessageBox.alert(error.message.toString(), "Error", {
+				autofocus: true,
+				confirmButtonText: "OK",
+				type: "error",
+			});
+		}
+	}
+	async function showMessage(msg, event) {
+		if (!msg) return;
+		ElMessageBox.alert(msg, "Message", {
+			autofocus: true,
+			confirmButtonText: "OK",
+		}).then(function () {
+			event.go(-1);
+		});
+	}
 
-export default {
-  name: "GenericForm",
-  data() {
-    return {
-      len: 13,
-      searchUser: "",
-      user: "",
-      button: "",
-      labelRegCNIC: "",
-      name: "",
-      age: "",
-      regno: "",
-      cnic: "",
-      gender: "",
-      deptName: "",
-      hostfee: "",
-      depts: [],
-      semesters: [],
-      programs: [],
-      addVisible: false,
-      removeVisible: false,
-      updatevisible: false,
-      errorVisible: true,
-      nameVisible: true,
-      regnoVisible: true,
-      cnicVisible: true,
-      hfeeVisible: true,
-      semsVisible: true,
-      deptVisible: true,
-      ageVisible: true,
-      genderVisible: true,
-      progVisible: true,
-    };
-  },
-  mounted() {
-    this.user = this.$store.getters.getUser;
-    this.depts = depts;
-    this.semesters = semesters;
-    this.programs = programs;
-    this.button = this.user; //this.user.split(" ")[0];
-    if (this.button == "Add Student") {
-      this.showAdd();
-    } else if (this.button == "Remove Student") {
-      this.setRegoandLen();
-      this.showRemove();
-      this.searchUser = "students";
-      document.getElementById("regno").focus();
-    } else if (this.button == "Update Student") {
-      this.setRegoandLen();
-      this.showUpdate();
-      this.searchUser = "students";
-      document.getElementById("regno").focus();
-    } else if (this.button == "Add Hostel Warden") {
-      this.showAdd();
-      this.hide();
-    } else if (this.button == "Remove Hostel Warden") {
-      this.setCNICandLen();
-      this.showRemove();
-      this.hide();
-      this.searchUser = "hostel";
-    } else if (this.button == "Update Hostel Warden") {
-      this.setCNICandLen();
-      this.showUpdate();
-      this.hide();
-      this.searchUser = "hostel";
-    } else if (this.button == "Add Mess Warden") {
-      this.showAdd();
-      this.hide();
-    } else if (this.button == "Remove Mess Warden") {
-      this.setCNICandLen();
-      this.showRemove();
-      this.hide();
-      this.searchUser = "mess";
-    } else if (this.button == "Update Mess Warden") {
-      this.setCNICandLen();
-      this.showUpdate();
-      this.hide();
-      this.searchUser = "mess";
-    } else if (this.button == "Add Security Warden") {
-      this.showAdd();
-      this.hide();
-    } else if (this.button == "Remove Security Warden") {
-      this.setCNICandLen();
-      this.showRemove();
-      this.hide();
-      this.searchUser = "security";
-    } else if (this.button == "Update Security Warden") {
-      this.setCNICandLen();
-      this.showUpdate();
-      this.hide();
-      this.searchUser = "security";
-    }
-  },
-  methods: {
-    encodeImageFileAsURL(element) {
-      var file = element.target.files[0];
-      var reader = new FileReader();
-      reader.onloadend = function () {
-        printIMG(reader.result);
-        var proImage = new Image();
-        proImage.src = reader.result;
-        proImage.width = 200;
-        proImage.height = 200;
-        document.body.appendChild(proImage);
-      };
-      reader.readAsDataURL(file);
-    },
+	export default {
+		name: "GenericForm",
 
-    hide() {
-      this.hfeeVisible = false;
-      this.ageVisible = false;
-      this.deptVisible = false;
-      this.semsVisible = false;
-      this.regnoVisible = false;
-      this.genderVisible = false;
-      this.progVisible = false;
-    },
-    showAdd() {
-      this.search = false;
-      this.addVisible = true;
-      this.updatevisible = false;
-      this.removeVisible = false;
-    },
-    showRemove() {
-      this.addVisible = false;
-      this.updatevisible = false;
-      this.removeVisible = true;
-    },
-    showUpdate() {
-      this.addVisible = false;
-      this.updatevisible = true;
-      this.removeVisible = false;
-    },
-    setRegoandLen() {
-      this.labelRegCNIC = "Reg No.";
-      this.len = 11;
-    },
-    setCNICandLen() {
-      this.labelRegCNIC = "CNIC";
-      this.len = 13;
-    },
-    async search() {
-      let id = this.regnoSearch;
-      if (this.button.includes("Student") && id.length < 11) {
-        alert("RegNo must be 11 digits");
-        return;
-      } else if (id.length < 11) {
-        alert("CNIC must be 13 digits");
-        return;
-      }
-      try {
-        let response = await axios.get(
-          `http://localhost:3000/${this.searchUser}/${id}`
-        );
-        this.setData(response.data[0]);
-      } catch (error) {
-        alert(error.message.toString());
-      }
-    },
-    setData(val) {
-      console.log(val);
-      if (val == undefined) {
-        alert("No record found");
-        return;
-      }
-      this.name = val.sname ? val.sname : val.name;
-      this.regno = val.rollno;
-      this.cnic = val.cnic;
-      this.gender = val.gender;
-      this.deptName = val.dname;
-      this.age = val.age;
-      this.sems = val.semno;
-      this.hostfee = val.hostelfee;
-      this.program = val.program;
-    },
+		data() {
+			return {
+				prevCNIC: "",
+				prevRegNo: "",
+				len: 13,
+				searchUser: "",
+				regnoSearch: "",
+				user: "",
+				button: "",
+				labelRegCNIC: "",
+				name: "",
+				age: "",
+				regno: "",
+				cnic: "",
+				gender: "",
+				deptName: "",
+				hostfee: "",
+				program: "",
+				sems: "",
+				depts: [],
+				semesters: [],
+				programs: [],
+				addVisible: false,
+				removeVisible: false,
+				updatevisible: false,
+				errorVisible: true,
+				nameVisible: true,
+				regnoVisible: true,
+				cnicVisible: true,
+				hfeeVisible: true,
+				semsVisible: true,
+				deptVisible: true,
+				ageVisible: true,
+				genderVisible: true,
+				progVisible: true,
+				search: true,
+				isDisabled: false,
+				isRemoveDisabled: false,
+				image: image,
+				addImage: "",
+				srcList: [],
+				genders: [
+					{ value: "Male", option: "Male" },
+					{ value: "Female", option: "Female" },
+					{ value: "Others", option: "Others" },
+				],
+			};
+		},
+		mounted() {
+			if (this.$store.getters.getLoginKey != "loggedIn") this.$router.push("/");
+			this.user = this.$store.getters.getUser;
+			console.log(this.user);
+			this.depts = depts;
+			this.semesters = semesters;
+			this.programs = programs;
+			this.button = this.user;
 
-    async submit() {
-      let qr = getBase64EncodedRegNo(this.regno);
+			if (this.button == "Add Student") {
+				this.showAdd();
+			} else if (this.button == "Remove Student") {
+				this.setRegandLen();
+				this.showRemove();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
+				this.searchUser = "students";
+			} else if (this.button == "Update Student") {
+				this.setRegandLen();
+				this.showUpdate();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
+				this.searchUser = "students";
+			} else if (this.button == "Add Hostel Warden") {
+				this.showAdd();
+				this.hide();
+			} else if (this.button == "Remove Hostel Warden") {
+				this.setCNICandLen();
+				this.showRemove();
+				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
+				this.searchUser = "hostelSupervisor";
+			} else if (this.button == "Update Hostel Warden") {
+				this.setCNICandLen();
+				this.showUpdate();
+				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
+				this.searchUser = "hostelSupervisor";
+			} else if (this.button == "Add Mess Warden") {
+				this.showAdd();
+				this.hide();
+			} else if (this.button == "Remove Mess Warden") {
+				this.setCNICandLen();
+				this.showRemove();
+				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
+				this.searchUser = "messSupervisor";
+			} else if (this.button == "Update Mess Warden") {
+				this.setCNICandLen();
+				this.showUpdate();
+				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
+				this.searchUser = "messSupervisor";
+			} else if (this.button == "Add Security Warden") {
+				this.showAdd();
+				this.hide();
+			} else if (this.button == "Remove Security Warden") {
+				this.setCNICandLen();
+				this.showRemove();
+				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
+				this.searchUser = "securitySupervosor";
+			} else if (this.button == "Update Security Warden") {
+				this.setCNICandLen();
+				this.showUpdate();
+				this.hide();
+				this.isDisabled = true;
+				this.isRemoveDisabled = true;
+				this.searchUser = "securitySupervosor";
+			}
+		},
+		methods: {
+			encodeImageFileAsURL(element) {
+				var file = element.target.files[0];
+				if (!file) return;
+				if (this.addVisible) {
+					var output = document.getElementById("addImg");
+					output.src = URL.createObjectURL(file);
+					output.onload = function () {
+						URL.revokeObjectURL(output.src); // free memory
+					};
+				}
 
-      const payloadset = {
-        name: this.name,
-        rollno: this.regno,
-        cnic: this.cnic,
-        gender: this.gender,
-        dept: this.deptName,
-        age: this.age,
-        semester: this.sems,
-        hostfee: this.hostfee,
-        rollN: this.regnoSearch,
-        program: this.program,
-        img: image,
-        qr: qr,
-      };
-      console.log("payload ", payloadset.img);
-      if (this.button == "Add Student") {
-        await axios
-          .post("http://localhost:3000/save", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Remove Student") {
-        await axios
-          .delete(`http://localhost:3000/remove/${this.regnoSearch}`)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Update Student") {
-        await axios
-          .patch("http://localhost:3000/update", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Add Hostel Warden") {
-        await axios
-          .post("http://localhost:3000/saveHW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Remove Hostel Warden") {
-        await axios
-          .delete(`http://localhost:3000/removeHW/${this.regnoSearch}`)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Update Hostel Warden") {
-        await axios
-          .patch("http://localhost:3000/updateHW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Add Mess Warden") {
-        await axios
-          .post("http://localhost:3000/saveMW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Remove Mess Warden") {
-        await axios
-          .delete(`http://localhost:3000/removeMW/${this.regnoSearch}`)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Update Mess Warden") {
-        await axios
-          .patch("http://localhost:3000/updateMW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Add Security Warden") {
-        await axios
-          .post("http://localhost:3000/saveSW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Remove Security Warden") {
-        await axios
-          .delete(`http://localhost:3000/removeSW/${this.regnoSearch}`)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      } else if (this.button == "Update Security Warden") {
-        await axios
-          .patch("http://localhost:3000/updateSW", payloadset)
-          .then((response) => {
-            alert(response.data);
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      }
-      this.$router.go(-1);
-      // this.$router.push("/"+this.button);
-    },
-  },
-};
+				var reader = new FileReader();
+				reader.onloadend = function () {
+					var img = new Image();
+					img.src = reader.result;
+					this.image = img.src;
+					// this.srcList.push(img.src);
+					img.onload = function () {
+						// create canvas element
+						var canvas = document.createElement("canvas");
+
+						// set canvas dimensions to resized image dimensions
+						var MAX_WIDTH = 200;
+						var MAX_HEIGHT = 200;
+						var width = img.width;
+						var height = img.height;
+
+						if (width > height) {
+							if (width > MAX_WIDTH) {
+								height *= MAX_WIDTH / width;
+								width = MAX_WIDTH;
+							}
+						} else {
+							if (height > MAX_HEIGHT) {
+								width *= MAX_HEIGHT / height;
+								height = MAX_HEIGHT;
+							}
+						}
+
+						canvas.width = width;
+						canvas.height = height;
+
+						// draw resized image on canvas
+						var ctx = canvas.getContext("2d");
+						// 0,0 is co ordinates to place image
+						ctx.drawImage(img, 0, 0, width, height);
+
+						// compress image as JPEG
+						var compressedImage = canvas.toDataURL("image/jpeg", 0.75); // set JPEG quality to 50%
+						printIMG(compressedImage);
+						this.addImage = compressedImage;
+
+						// pass compressed image data to function
+						// newFunction(compressedImage);
+					};
+				};
+				reader.readAsDataURL(file);
+			},
+
+			hide() {
+				this.hfeeVisible = false;
+				this.ageVisible = false;
+				this.deptVisible = false;
+				this.semsVisible = false;
+				this.regnoVisible = false;
+				this.genderVisible = false;
+				this.progVisible = false;
+			},
+			showAdd() {
+				this.search = false;
+				this.addVisible = true;
+				this.updatevisible = false;
+				this.removeVisible = false;
+			},
+			showRemove() {
+				this.addVisible = false;
+				this.updatevisible = false;
+				this.removeVisible = true;
+			},
+			showUpdate() {
+				this.addVisible = false;
+				this.updatevisible = true;
+				this.removeVisible = false;
+			},
+			setRegandLen() {
+				this.labelRegCNIC = "Reg No.";
+				this.len = 11;
+			},
+			setCNICandLen() {
+				this.labelRegCNIC = "CNIC";
+				this.len = 13;
+			},
+			async searchUsr() {
+				let id = this.regnoSearch;
+				if (this.button.includes("Student") && id.length < 11) {
+					ElMessageBox.alert("RegNo must be 11 digits", "Validate RegNo", {
+						autofocus: true,
+						confirmButtonText: "OK",
+					});
+					return;
+				} else if (id.length < 11) {
+					ElMessageBox.alert("CNIC must be 13 digits", "Validate CNIC", {
+						autofocus: true,
+						confirmButtonText: "OK",
+					});
+					return;
+				}
+				try {
+					let response = await axios.get(`${VUE_APP_URL}/${this.searchUser}/${id}`);
+					this.setData(response.data[0]);
+				} catch (error) {
+					ElMessageBox.alert(error.message.toString(), "Error", {
+						autofocus: true,
+						confirmButtonText: "OK",
+						type: "error",
+					});
+				}
+			},
+			setData(val) {
+				if (val == undefined) {
+					ElMessageBox.alert("No record found", "Message", {
+						autofocus: true,
+						confirmButtonText: "OK",
+					});
+					return;
+				}
+				this.name = val.sname ? val.sname : val.name;
+				this.regno = val.rollno;
+				this.prevRegNo = val.rollno;
+				this.cnic = val.cnic;
+				this.prevCNIC = val.cnic;
+				this.gender = val.gender;
+				this.deptName = val.dname;
+				this.age = val.age;
+				this.sems = val.semno;
+				this.hostfee = val.hostelfee;
+				this.program = val.program;
+				this.image = val.image;
+				this.srcList.push(val.image);
+				if (!this.removeVisible) this.isDisabled = false;
+				else this.isRemoveDisabled = false;
+			},
+			capatilize(str) {
+				if (str == undefined || str == null || str == "") return;
+				let name = str.split(" ");
+				name = name.map((n) => {
+					return n[0].toUpperCase() + n.substring(1).toLowerCase();
+				});
+				return name.join(" ");
+			},
+			async submit() {
+				function showError(error) {
+					ElMessageBox.alert(`${error} Field Missing`, "All fields are required", {
+						autofocus: true,
+						confirmButtonText: "OK",
+						type: "error",
+					});
+				}
+				if (this.button.includes("Student")) {
+					switch ("") {
+						case this.deptName:
+							showError("Department");
+							return;
+
+						case this.sems:
+							showError("Semester");
+							return;
+						case this.program:
+							showError("Program");
+							return;
+						case this.gender:
+							showError("Gender");
+							return;
+					}
+				}
+
+				let n = this.capatilize(this.name.replace(/\s+/g, " ").trim());
+				const payloadset = {
+					name: n,
+					rollno: this.regno,
+					cnic: this.cnic,
+					gender: this.gender,
+					dept: this.deptName,
+					age: this.age,
+					semester: this.sems,
+					hostfee: this.hostfee,
+					rollN: this.regnoSearch,
+					program: this.program,
+					img: image,
+					prevCNIC: this.prevCNIC,
+					prevRegNo: this.prevRegNo,
+				};
+				console.log(payloadset);
+				const choice = async () => {
+					switch (this.button) {
+						case "Add Student":
+							{
+								let qr = getBase64EncodedRegNo(this.regno);
+								payloadset["qr"] = qr;
+								// let node = document.getElementById("imgAdd");
+								// if (node.parentNode) {
+								// 	node.parentNode.removeChild(node);
+								// }
+								const imageUrl = await apiCall("post", `${VUE_APP_URL}/students/saveStud`, payloadset);
+								if (imageUrl.includes("data:image/")) {
+									const linkSource = `${imageUrl}`;
+									const downloadLink = document.createElement("a");
+									downloadLink.href = linkSource;
+									downloadLink.download = this.regno;
+									downloadLink.click();
+									this.$router.go(-1);
+								} else showMessage(imageUrl, this.$router);
+							}
+							break;
+						case "Remove Student":
+							{
+								const msg = await apiCall("delete", `${VUE_APP_URL}/students/removeStud/${this.regnoSearch + "," + this.cnic}`);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Update Student":
+							{
+								const msg = await apiCall("patch", `${VUE_APP_URL}/students/updateStud`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Add Hostel Warden":
+							{
+								const msg = await apiCall("post", `${VUE_APP_URL}/hostelSupervisor/saveHW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Remove Hostel Warden":
+							{
+								const msg = await apiCall("delete", `${VUE_APP_URL}/hostelSupervisor/removeHW/${this.regnoSearch}`);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Update Hostel Warden":
+							{
+								const msg = await apiCall("patch", `${VUE_APP_URL}/hostelSupervisor/updateHW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Add Mess Warden":
+							{
+								const msg = await apiCall("post", `${VUE_APP_URL}/messSupervisor/saveMW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Remove Mess Warden":
+							{
+								const msg = await apiCall("delete", `${VUE_APP_URL}/messSupervisor/removeMW/${this.regnoSearch}`);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Update Mess Warden":
+							{
+								const msg = await apiCall("patch", `${VUE_APP_URL}/messSupervisor/updateMW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Add Security Warden":
+							{
+								const msg = await apiCall("post", `${VUE_APP_URL}/securitySupervosor/saveSW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Remove Security Warden":
+							{
+								const msg = await apiCall("delete", `${VUE_APP_URL}/securitySupervosor/removeSW/${this.regnoSearch}`);
+								showMessage(msg, this.$router);
+							}
+							break;
+						case "Update Security Warden":
+							{
+								const msg = await apiCall("patch", `${VUE_APP_URL}/securitySupervosor/updateSW`, payloadset);
+								showMessage(msg, this.$router);
+							}
+							break;
+					}
+				};
+				choice(); //.then(() => this.$router.go(-1));
+			},
+		},
+	};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.hello {
-  justify-content: center;
-  align-items: center;
-}
+	.hello {
+		justify-content: center;
+		align-items: center;
+		width: 60% !important;
+		margin: 0 auto !important;
+		user-select: none;
+	}
 
-.row {
-  display: flex;
-  flex-direction: row;
-}
+	.row {
+		display: flex;
+		flex-direction: row;
+		margin: 2px;
+		padding: 3px;
+		align-items: center;
+	}
+	.inputbox {
+		font-size: 0.8rem;
+		/* outline: 1px solid silver; */
+	}
 
-.label {
-  width: 25%;
-  padding: 12px 20px;
-  margin-left: 0px;
-  margin-right: 10px;
-  font-weight: bold;
-  text-align: left;
-}
+	.label {
+		width: 25%;
+		margin-left: 0px;
+		margin-right: 10px;
+		font-weight: bold;
+		text-align: left;
+		/* color: white; */
+	}
+	searchLabel {
+		margin: 1rem;
+		font-weight: bold;
+		font-size: 1rem;
+	}
+	select {
+		width: 75%;
+		display: inline-block;
+		border: 1px solid rgb(43, 42, 44);
+		border-radius: 4px;
+	}
 
-.inputbox,
-select {
-  width: 75%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid rgb(43, 42, 44);
-  border-radius: 4px;
-  box-sizing: border-box;
-}
+	.searchbox {
+		width: 50%;
+		padding: 12px 20px;
+		margin: 8px 0;
+		display: inline-block;
+		border: 1px solid rgb(43, 42, 44);
+		border-radius: 4px;
+		box-sizing: border-box;
+	}
 
-.searchbox {
-  width: 50%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid rgb(43, 42, 44);
-  border-radius: 4px;
-  box-sizing: border-box;
-}
+	.buttons {
+		width: 100% !important;
+		background-color: #2d10d0;
+		color: white;
+		padding: 20px 20px;
+		/* margin: 8px 10px; */
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-weight: bolder;
+		font-size: 1.5rem;
+	}
 
-.buttons {
-  width: 100%;
-  background-color: #4caf50;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+	#search {
+		width: 25%;
+		background-color: #2d10d0;
+		color: white;
+		padding: 14px 20px;
+		margin: 8px 0;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
 
-#search {
-  width: 25%;
-  background-color: #2d10d0;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+	input[type="submit"]:hover {
+		background-color: #45a049;
+	}
 
-input[type="submit"]:hover {
-  background-color: #45a049;
-}
+	#intdiv {
+		border-radius: 5px;
+		/* background-color: #f2f2f2; */
+		padding: 10px;
+		/* width: 100%;	 */
+	}
+	@media screen and (max-width: 880px) {
+		#formSection {
+			margin: 0.5rem 5px;
+			widows: 100%;
+		}
 
-#intdiv {
-  border-radius: 5px;
-  background-color: #f2f2f2;
-  padding: 20px;
-}
+		#intdiv {
+			border-radius: 5px;
+			/* background-color: #f2f2f2; */
+			padding: 10px;
+			width: 100%;
+		}
+	}
+
+	.demo-image__error .image-slot {
+		font-size: 30px;
+	}
+	.demo-image__error .image-slot .el-icon {
+		font-size: 30px;
+	}
+	.demo-image__error .el-image {
+		width: 100%;
+		height: 200px;
+	}
 </style>

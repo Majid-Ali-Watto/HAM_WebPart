@@ -1,7 +1,7 @@
 <!-- @format -->
 
 <template>
-	<div class="hello">
+	<div class="container">
 		<div id="card" v-for="l in list" :key="l" @click="moveTo(l.name, l.option)">
 			<img :src="l.img" alt="Image" id="img" />
 			<button id="button">{{ l.option }}</button>
@@ -28,7 +28,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-	.hello {
+	.container {
 		display: flex;
 		flex-direction: row;
 		justify-content: center;

@@ -2,7 +2,7 @@
 
 import { createWebHashHistory, createRouter } from "vue-router";
 // import all the routes components
-import HelloWorld from "../components/HelloWorld.vue";
+import AdminLogin from "../components/AdminLogin.vue";
 import MainMenu from "../components/MainMenu.vue";
 import GenericForm from "../components/GenericForm.vue";
 import StudentSec from "../components/Student.vue";
@@ -13,13 +13,13 @@ import ViewData from "../components/ViewData.vue";
 
 // define all the routes
 const routes = [
-	{ path: "/", component:HelloWorld },
+	{ path: "/", component: AdminLogin },
 	{ path: "/Student", name: "Student", component: StudentSec },
 	{ path: "/Hostel", name: "Hostel", component: HostelSec },
 	{ path: "/Mess", name: "Mess", component: MessSec },
 	{ path: "/Security", name: "Security", component: SecuritySec },
-	{ path: "/ViewData", name: "ViewData", component:ViewData},
-	{ path: "/GenericForm", name: "GenericForm", component: GenericForm},
+	{ path: "/ViewData", name: "ViewData", component: ViewData },
+	{ path: "/GenericForm", name: "GenericForm", component: GenericForm },
 	{
 		path: "/MainMenu",
 		component: MainMenu,
@@ -32,7 +32,6 @@ const routes = [
 			],
 		},
 	},
-	
 ];
 // create all the routes
 const router = createRouter({

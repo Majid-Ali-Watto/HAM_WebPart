@@ -1,14 +1,9 @@
 <!-- @format -->
 
 <template>
-	<div
-		class="hello"
-		@copy.prevent
-		@paste.prevent>
+	<div class="container" @copy.prevent @paste.prevent>
 		<div>
-			<div
-				id="searchSection"
-				style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
+			<div id="searchSection" style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
 				<label class="label">{{ getLabel }}</label>
 				<el-input
 					show-word-limit
@@ -20,18 +15,10 @@
 					required
 					style="width: 30%"
 					onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;" />
-				<el-button
-					type="primary"
-					class="input"
-					@click="getStudent()"
-					>Search</el-button
-				>
+				<el-button type="primary" class="input" @click="getStudent()">Search</el-button>
 			</div>
 
-			<div
-				v-if="state.showData"
-				style="overflow-x: auto"
-				id="searchedTables">
+			<div v-if="state.showData" style="overflow-x: auto" id="searchedTables">
 				<legend style="font-weight: bold">Details</legend>
 
 				<table class="table">
@@ -46,12 +33,8 @@
 						</th>
 					</tr>
 
-					<tr
-						v-for="row in state.allData"
-						v-bind:key="row.rollno">
-						<td
-							v-for="column in columnNames"
-							v-bind:key="column">
+					<tr v-for="row in state.allData" v-bind:key="row.rollno">
+						<td v-for="column in columnNames" v-bind:key="column">
 							<div v-if="column == 'image'">
 								<el-image
 									:src="row[column]"
@@ -62,49 +45,27 @@
 									:initial-index="4"
 									fit="cover" />
 							</div>
-							<div
-								v-else
-								@copy.prevent>
+							<div v-else @copy.prevent>
 								{{ row[column] }}
 							</div>
 						</td>
 					</tr>
 				</table>
 
-				<el-button
-					type="primary"
-					class="input"
-					@click="state.showData = false"
-					@copy.prevent
-					>Close</el-button
-				>
+				<el-button type="primary" class="input" @click="state.showData = false" @copy.prevent>Close</el-button>
 			</div>
 		</div>
 
-		<div
-			id="tables"
-			@copy.prevent>
-			<table
-				class="table"
-				v-if="state.info.length > 0">
+		<div id="tables" @copy.prevent>
+			<table class="table" v-if="state.info.length > 0">
 				<tr v-if="columnNames">
-					<th
-						style="background-color: cyan; color: black"
-						scope="col"
-						v-for="column in columnNames"
-						v-bind:key="column.value">
+					<th style="background-color: cyan; color: black" scope="col" v-for="column in columnNames" v-bind:key="column.value">
 						{{ column == "status" ? "Fee Status".toUpperCase() : column.toUpperCase() }}
 					</th>
 				</tr>
 
-				<tr
-					v-for="row in state.info"
-					v-bind:key="row.rollno"
-					@dblclick="showRow(row)">
-					<td
-						v-for="column in columnNames"
-						v-bind:key="column"
-						@copy.prevent>
+				<tr v-for="row in state.info" v-bind:key="row.rollno" @dblclick="showRow(row)">
+					<td v-for="column in columnNames" v-bind:key="column" @copy.prevent>
 						<div v-if="column == 'image'">
 							<el-image
 								:src="row[column]"
@@ -135,7 +96,7 @@
 	import axios from "axios";
 	import { ElMessageBox } from "element-plus";
 	import VUE_APP_URL from "@/assets/url";
-	import { reactive } from 'vue';
+	import { reactive } from "vue";
 	export default {
 		name: "ViewData",
 		mounted() {
@@ -173,19 +134,12 @@
 				else return "RegNo";
 			},
 		},
-	
-		// data() {
-		// 	return {
-		// 		info: [],
-		// 		showData: false,
-		// 		regno: "",
-		// 		allData: [],
-		// 	};
-		// },
+
 		methods: {
 			showRow(row) {
 				let data = "";
-				if (this.$store.getters.getUser == "View Students") data = "Name : " + row.sname + " <br> RegNo : " + row.rollno + "  <br> CNIC : " + row.cnic;
+				if (this.$store.getters.getUser == "View Students")
+					data = "Name : " + row.sname + " <br> RegNo : " + row.rollno + "  <br> CNIC : " + row.cnic;
 				else data = "Name : " + row.name + "  <br> CNIC : " + row.cnic;
 				ElMessageBox.alert(data, "Details", {
 					autofocus: true,
@@ -201,8 +155,7 @@
 				else return "hostelSupervisor";
 			},
 			async getData(user) {
-				let u = "";
-				u = this.getUserEndpoint(user);
+				let u = this.getUserEndpoint(user);
 				await axios
 					.get(`${VUE_APP_URL}/${u}`)
 					.then((response) => {
@@ -218,12 +171,11 @@
 
 			async getStudent() {
 				if (this.state.showData == true) return;
-				let u = "";
-				u = this.getUserEndpoint(this.$store.getters.getUser);
+				let u = this.getUserEndpoint(this.$store.getters.getUser);
 				let id = this.state.regno;
 				let idCopy = id;
 				if (!Number(id) || idCopy.toString().length < this.getLength) {
-					ElMessageBox.alert("Please enter valid registration number", `Validate ${this.getLabel}`, {
+					ElMessageBox.alert(`Please enter valid ${this.getLabel} number`, `Validate ${this.getLabel}`, {
 						autofocus: true,
 						confirmButtonText: "OK",
 					});
@@ -255,7 +207,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-	.hello {
+	.container {
 		justify-content: center;
 		align-items: center;
 		margin: 0 auto !important;

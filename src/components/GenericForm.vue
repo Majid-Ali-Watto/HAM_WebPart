@@ -1,7 +1,7 @@
 <!-- @format -->
 
 <template>
-	<div class="hello" @copy.prevent @paste.prevent>
+	<div class="container" @copy.prevent @paste.prevent>
 		<legend style="font-weight: bold; font-size: 1.5rem">{{ user }} Data</legend>
 		<hr />
 		<div v-if="search" id="searchSection" style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 0.5rem">
@@ -469,7 +469,7 @@
 						confirmButtonText: "OK",
 					});
 					return;
-				} else if (id.length < 11) {
+				} else if (id.length < 13) {
 					ElMessageBox.alert("CNIC must be 13 digits", "Validate CNIC", {
 						autofocus: true,
 						confirmButtonText: "OK",
@@ -527,6 +527,7 @@
 						type: "error",
 					});
 				}
+				// if any of four missing shows error message
 				if (this.button.includes("Student")) {
 					switch ("") {
 						case this.deptName:
@@ -659,7 +660,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-	.hello {
+	.container {
 		justify-content: center;
 		align-items: center;
 		width: 60% !important;

@@ -1,19 +1,19 @@
 <!-- @format -->
 
 <template>
-	<div class="hello">
+	<div class="container">
 		<fieldset>
-			<legend style="font-weight: bold; font-size: 1.5rem; background: rgba(255, 255, 255, 0.25); padding: 1rem">Admin credientials</legend>
-			<el-form @submit.prevent="disp" style="padding: 1rem; display: flex; flex-direction: column; background-color: #333">
-				<el-row style="display: flex; align-items: center">
+			<legend>Admin credientials</legend>
+			<el-form @submit.prevent="login" class="form">
+				<el-row class="row">
 					<el-col :lg="8" :md="8" :sm="8">
 						<label for="username">Username</label>
 					</el-col>
 					<el-col :lg="16" :md="16" :sm="16">
 						<el-input
+							v-model="username"
 							show-word-limit
 							type="text"
-							v-model="username"
 							:maxlength="15"
 							:minlength="5"
 							class="input"
@@ -21,7 +21,7 @@
 							input-style="padding:14px 20px;margin: 8px 0;width:100%;" />
 					</el-col>
 				</el-row>
-				<el-row style="display: flex; align-items: center">
+				<el-row class="row">
 					<el-col :lg="8" :md="8" :sm="8">
 						<label for="password">Password</label>
 					</el-col>
@@ -38,7 +38,7 @@
 							show-password
 					/></el-col>
 				</el-row>
-				<el-row style="display: flex; align-items: center">
+				<el-row class="row">
 					<el-col :lg="24" :md="24" :sm="24">
 						<button type="submit" id="button">Login</button>
 					</el-col>
@@ -56,17 +56,15 @@
 	import { useRouter } from "vue-router";
 
 	export default {
-		name: "HelloWorld",
-		props: {
-			msg: String,
-		},
+		name: "AdminLogin",
+
 		setup() {
 			const store = useStore();
 			const router = useRouter();
-			let username = ref("");
-			let password = ref("");
+			const username = ref(null);
+			const password = ref(null);
 
-			async function disp() {
+			async function login() {
 				await axios
 					.get("http://localhost:3000/admin")
 					.then((response) => {
@@ -78,6 +76,9 @@
 							ElMessageBox.alert("Invalid Credientials", "Error", {
 								autofocus: true,
 								confirmButtonText: "OK",
+							}).then(() => {
+								username.value = null;
+								password.value = null;
 							});
 						}
 					})
@@ -91,7 +92,7 @@
 			return {
 				username,
 				password,
-				disp,
+				login,
 			};
 		},
 	};
@@ -99,7 +100,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-	.hello {
+	.container {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -113,7 +114,22 @@
 		font-size: x-large;
 		color: white;
 	}
-
+	legend {
+		font-weight: bold;
+		font-size: 1.5rem;
+		background: rgba(255, 255, 255, 0.25);
+		padding: 1rem;
+	}
+	.form {
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		background-color: #333;
+	}
+	.row {
+		display: flex;
+		align-items: center;
+	}
 	#button {
 		background-color: #00b4d8;
 		color: white;
@@ -125,11 +141,7 @@
 		cursor: pointer;
 		width: 94%;
 	}
-	/* .showHide {
-		margin: 1rem;
-		padding: 14px 20px;
-		border: none;
-	} */
+
 	button:hover {
 		opacity: 0.8;
 	}

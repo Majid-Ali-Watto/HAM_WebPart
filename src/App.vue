@@ -5,6 +5,7 @@
 		<div id="logoContainer">
 			<img alt="QAU logo" src="./assets/logo.png" id="imgStyle" />
 			<h1 id="headerText">Hostel Activity Monitor</h1>
+			<button class="logout" @click="logout" :disabled="!key">Logout</button>
 		</div>
 		<div id="loginContainer">
 			<router-view></router-view>
@@ -13,8 +14,35 @@
 </template>
 
 <script>
+	import { useStore } from "vuex";
+	import { useRouter } from "vue-router";
+	import { ElMessageBox } from "element-plus";
+	import { ref, computed } from "vue";
 	export default {
 		name: "App",
+
+		setup() {
+			const store = useStore();
+			const router = useRouter();
+			const key = ref(computed(() => store.getters["getLoginKey"]));
+			function logout() {
+				try {
+					store.commit("setLoginKey", null);
+					key.value = null;
+					router.push("/");
+				} catch (error) {
+					ElMessageBox.alert(error, "Message", {
+						autofocus: true,
+						confirmButtonText: "OK",
+					});
+				}
+			}
+
+			return {
+				logout,
+				key,
+			};
+		},
 	};
 </script>
 
@@ -59,10 +87,20 @@
 		text-transform: uppercase;
 		user-select: none;
 		color: white;
-		width: 60%;
+		width: 50%;
 		display: flex;
-		justify-content: center;
+		justify-content: flex-start;
 		align-items: center;
+	}
+	.logout {
+		color: white;
+		cursor: pointer;
+		background-color: #333;
+		padding: 5pt 10pt;
+	}
+	.logout:disabled {
+		cursor: not-allowed;
+		color: gray;
 	}
 	#homeContainer {
 		width: 100%;
@@ -76,6 +114,7 @@
 		padding: 1rem;
 		flex-wrap: wrap;
 		align-items: center;
+		justify-content: space-between;
 	}
 	#loginContainer {
 		justify-content: center;
